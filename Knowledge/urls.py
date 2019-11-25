@@ -19,10 +19,10 @@ from django.urls import path
 from rest_framework import routers
 
 from Knowledge import views
-from api.views import UserViewSet
+from api.views import ExtendUserViewSet
 
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
+router.register(r'users', ExtendUserViewSet)
 
 urlpatterns = [
     url(r'^$', views.index),

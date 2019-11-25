@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from django.contrib.auth.models import User
+from .models import ExtendUser
 
-from .serializer import UserSerializer
+from .serializer import ExtendUserSerializer
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class ExtendUserViewSet(viewsets.ModelViewSet):
+    queryset = ExtendUser.objects.all()
+    serializer_class = ExtendUserSerializer
