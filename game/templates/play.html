@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="{% static "jquery-3.4.1.min.js" %}"></script>
+</head>
+
+<body>
+    <script>
+        $.ajax({
+            url: "get_question",
+            type: "get",
+            dataType: "json",
+            success: function (data) {
+                $("#topic").text(data[0].topic);
+                $("#a").text(data[0].option[0]);
+                $("#b").text(data[0].option[1]);
+                $("#c").text(data[0].option[2]);
+                $("#d").text(data[0].option[3]);
+            }
+        });
+    </script>
+    <h1 id="topic"></h1>
+    <div id="container">
+        <span id="a"></span>
+        <span id="b"></span>
+        <span id="c"></span>
+        <span id="d"></span>
+    </div>
+</body>
+
+</html>
