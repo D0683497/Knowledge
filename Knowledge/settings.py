@@ -123,3 +123,5 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'game.ExtendUser'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+LOGIN_REDIRECT_URL = '/'
