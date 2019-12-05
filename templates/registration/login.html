@@ -1,28 +1,74 @@
 {% extends "layout.html" %}
 {% load static %}
 
-{% block head %}
-
-{% endblock %}
-
-{% block title %}黑客社{% endblock %}
+{% block title %}資安週 - 登入{% endblock %}
 
 {% block content %}
 <div class="container">
-    {% if form.errors %}
-    <p>帳號密碼驗證失敗，請重試</p>
-    {% endif %}
+    <h3>登入</h3>
+    <hr>
+
     {% if next %}
-    {% if user.is_authenticated %}
-    <p>你的帳號沒有權限瀏覽此頁面，請嘗試登入其他帳號</p>
+        {% if user.is_authenticated %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                你的帳號沒有權限瀏覽此頁面，請嘗試登入其他帳號
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% else %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                登入以瀏覽此頁
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    {% if form.errors %}
+        <form method="post" action="{% url 'login' %}?next={{ next }}">
+
+            {% csrf_token %}
+    
+            <div class="form-group">
+                <label for="id_username">帳號</label>
+                <input id="id_username" name="username" type="text" class="form-control is-invalid" aria-describedby="usernameHelp"></input>
+                <small id="usernameHelp" class="form-text text-muted">請輸入帳號，不是暱稱，也不是學號</small>
+                <div class="invalid-feedback">
+                    帳號密碼驗證失敗，請重試
+                </div>
+            </div>
+    
+            <div class="form-group">
+                <label for="id_password">密碼</label>
+                <input type="password" class="form-control is-invalid" id="id_password" name="password"></input>
+                <div class="invalid-feedback">
+                    帳號密碼驗證失敗，請重試
+                </div>
+            </div>
+    
+            <button type="submit" class="btn btn-primary">登入</button>
+        </form>
     {% else %}
-    <p>登入以瀏覽此頁</p>
+        <form method="post" action="{% url 'login' %}?next={{ next }}">
+
+            {% csrf_token %}
+    
+            <div class="form-group">
+                <label for="id_username">帳號</label>
+                <input id="id_username" name="username" type="text" class="form-control" aria-describedby="usernameHelp"></input>
+                <small id="usernameHelp" class="form-text text-muted">請輸入帳號，不是暱稱，也不是學號</small>
+            </div>
+    
+            <div class="form-group">
+                <label for="id_password">密碼</label>
+                <input type="password" class="form-control" id="id_password" name="password"></input>
+            </div>
+    
+            <button type="submit" class="btn btn-primary">登入</button>
+        </form>
     {% endif %}
-    {% endif %}
-    <form method="post" action="{% url 'login' %}?next={{ next }}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">登入</button>
-    </form>
+
 </div>
 {% endblock %}

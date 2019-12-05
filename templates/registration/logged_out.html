@@ -1,1 +1,23 @@
-<a href="{% url 'login' %}">重新登入</a>
+{% extends "layout.html" %}
+{% load static %}
+
+{% block head %}
+<meta http-equiv=”refresh” content="3; url={% url 'index' %}" />
+{% endblock %}
+
+{% block title %}資安週 - 登出{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h3>登出</h3>
+    <hr>
+
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        已成功登出，3 秒後將跳轉至首頁，或<a href="{% url 'index' %}" class="alert-link">點此至首頁</a>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+</div>
+{% endblock %}
