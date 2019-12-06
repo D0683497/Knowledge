@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ExtendUser, Question, Option, Record, History
+from .models import ExtendUser, Game, Question, Option, Record, History
 
 # Register your models here.
 
@@ -21,5 +21,6 @@ class HistoryAdmin(admin.ModelAdmin):
     pass
 
 admin.site.register(ExtendUser, ExtendUserAdmin)
+admin.site.register(Game)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(History, HistoryAdmin)
