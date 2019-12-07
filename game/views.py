@@ -13,7 +13,10 @@ def play(request):
 @login_required
 def start_game(request):
     user = request.user
-    user.game.delete()
+    try:
+        user.game.delete()
+    except Game.DoesNotExist:
+        pass
     game = Game.objects.create(user=user)
     json = {"game_id": game.id, "question": []}
     for question in Question.objects.all().order_by("?")[:5]:
