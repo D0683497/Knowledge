@@ -5,45 +5,80 @@
 
 {% block content %}
 <div class="container">
-    <h3>遊戲中</h3>
+    <div class="progress" id="progress">
+        <div id="time" class="progress-bar progress-bar-striped bg-danger progress-bar-animated" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
     <hr>
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br/>
-    <input id="chat-message-input" type="text" size="100"/><br/>
-    <input id="chat-message-submit" type="button" value="Send"/>
+    <div class="card border-dark">
+        <div class="card-header bg-transparent border-dark" id="topic"></div>
+        <div class="card-body text-dark">
+            <form>
+                <button type="button" class="btn btn-info btn-block" id="option0"></button>
+                <button type="button" class="btn btn-info btn-block my-3" id="option1"></button>
+                <button type="button" class="btn btn-info btn-block my-3" id="option2"></button>
+                <button type="button" class="btn btn-info btn-block" id="option3"></button>
+            </form>
+        </div>
+    </div>
+    <hr>
+    <div class="d-flex justify-content-center">
+        <div class="spinner-grow text-primary mx-3" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-primary mx-3" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-primary mx-3" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <hr>
+    <!-- 測試用 -->
+    <form action="{% url 'game' %}" method="POST">
+        {% csrf_token %} 
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
 </div>
 {% endblock %}
 
 {% block js %}
 <script>
-    var username = {{ username }};
-
-    var gameSocket = new WebSocket('ws://' + window.location.host + '/ws/game/' + username);
-
-    gameSocket.onmessage = function(e) {
-        var data = JSON.parse(e.data);
-        var message = data['message'];
-        document.querySelector('#chat-log').value += (message + '\n');
-    };
-
-    gameSocket.onclose = function(e) {
-        console.error('Game socket closed unexpectedly');
-    };
-
-    document.querySelector('#chat-message-input').focus();
-    document.querySelector('#chat-message-input').onkeyup = function(e) {
-        if (e.keyCode === 13) {  // enter, return
-            document.querySelector('#chat-message-submit').click();
-        }
-    };
-
-    document.querySelector('#chat-message-submit').onclick = function(e) {
-        var messageInputDom = document.querySelector('#chat-message-input');
-        var message = messageInputDom.value;
-        chatSocket.send(JSON.stringify({
-            'message': message
-        }));
-
-        messageInputDom.value = '';
-    };
+    $(document).ready(function() {
+        $.ajax({
+            type: "GET", //傳送方式
+            url: "{% url 'question' %}", //傳送目的地
+            success: function(data) {
+                console.log(data);
+                document.getElementById("topic").innerHTML = data['topic']
+                document.getElementById("option0").innerHTML = data['option0']
+                document.getElementById("option1").innerHTML = data['option1']
+                document.getElementById("option2").innerHTML = data['option2']
+                document.getElementById("option3").innerHTML = data['option3']
+                
+                // 計算秒數
+                var i = 10;
+                var counterBack = setInterval(function(){
+                    if(i >= 0){
+                        document.getElementById("time").style.width = i*10 +"%";
+                        document.getElementById("time").innerHTML = i + "秒";
+                        i--;
+                    } else {
+                        // 移除 progress，並添加 alert 時間到了
+                        document.getElementById("time").remove();
+                        document.getElementById("progress").classList.add('alert');
+                        document.getElementById("progress").classList.add('alert-success');
+                        document.getElementById("progress").classList.add('text-center');
+                        document.getElementById("progress").classList.remove('progress');
+                        document.getElementById("progress").role = "alert";
+                        document.getElementById("progress").innerHTML = "~~時間到~~";
+                        clearTimeout(counterBack);
+                    }
+                }, 1000);
+            },
+            error: function(jqXHR) {
+                console.log("error");
+            }
+        })
+    });
 </script>
 {% endblock %}
