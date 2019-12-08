@@ -4,10 +4,8 @@ from django.db import models
 # Create your models here.
 
 class ExtendUser(AbstractUser):
-    studentId = models.CharField(max_length=8)
-
-class Game(models.Model):
-    user = models.OneToOneField("ExtendUser", related_name="game",on_delete=models.CASCADE)
+    studentId = models.CharField(max_length=10) #學號
+    nickname = models.CharField(max_length=10) #暱稱
 
 """
 問題
@@ -18,7 +16,6 @@ class Question(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False) # 創建時間
     modified_at = models.DateTimeField(auto_now=True, editable=False) # 修改時間
     is_active = models.BooleanField(default=True) # 是否公開
-    game = models.ManyToManyField("Game", related_name="questions", blank=True)
 
 """
 選項
