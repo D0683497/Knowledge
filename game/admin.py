@@ -23,3 +23,4 @@ class HistoryAdmin(admin.ModelAdmin):
 admin.site.register(ExtendUser, ExtendUserAdmin)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(History, HistoryAdmin)
+admin.site.register(Record)

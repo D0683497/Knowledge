@@ -43,10 +43,10 @@
             success: function(data) {
                 console.log(data);
                 document.getElementById("topic").innerHTML = data['topic']
-                document.getElementById("option0").innerHTML = data['option0']
-                document.getElementById("option1").innerHTML = data['option1']
-                document.getElementById("option2").innerHTML = data['option2']
-                document.getElementById("option3").innerHTML = data['option3']
+                document.getElementById("option0").value = data['option0']
+                document.getElementById("option1").value = data['option1']
+                document.getElementById("option2").value = data['option2']
+                document.getElementById("option3").value = data['option3']
                 
                 // 計算秒數
                 var i = 10;

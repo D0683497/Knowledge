@@ -17,6 +17,9 @@ class Question(models.Model):
     modified_at = models.DateTimeField(auto_now=True, editable=False) # 修改時間
     is_active = models.BooleanField(default=True) # 是否公開
 
+    def __str__(self):
+        return self.topic + " [%s]" % self.is_active
+
 """
 選項
 """
@@ -29,9 +32,12 @@ class Option(models.Model):
         unique_together = [
             ("question", "description"), # no duplicated choice per question
         ]
+    
+    def __str__(self):
+        return self.description + " [%s]" % self.score
 
 """
-一筆答題記錄
+一回合題記錄
 """
 class Record(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)

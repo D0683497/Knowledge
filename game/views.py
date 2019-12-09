@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.core.cache import cache
 from django.db.models import Max
 
-from .models import Question, Option
+from .models import Question, Option, Record
 
 import json
 import pickle
@@ -59,7 +59,16 @@ def get_random_question():
 def answer(request):
     username = request.user.username
     if cache.get(username): # 時間內回答
-        select_option = request.POST.get('option')
+        select_value = request.POST.get('option')
+        question = pickle.loads(cache.get(username))
+        cache.delete(username)
+        select_option = question.choices.all().filter(description=select_value).first()
+        if cache.get(username+'record'): #如果有對戰紀錄
+            r = pickle.loads(cache.get(username+'record')) 
+            cache.set(username+'record', r.append(select_option), 15)
+        else:
+            cache.set(username+'record', pickle.dumps([select_option]), 15)
+        #cache.set(username+'record'+'1', pickle.dumps(question.objects.filter()), 10) #一筆紀錄
         return HttpResponseRedirect(reverse('game'))
     else: # 時間外回答
         print('timeout')
