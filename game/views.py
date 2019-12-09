@@ -5,14 +5,25 @@ from django.urls import reverse
 from django.core.cache import cache
 from django.db.models import Max
 
-from .models import Question, Option, Record
+from .models import Question, Option, Record, History
 
 import json
 import pickle
 import random
 
+"""
+username: 紀錄一題題目及選項
+userround: 紀錄回合(一場五回合)
+userrecord: 紀錄答題記錄(用 list 的形式)
+"""
+
 @login_required
 def play(request):
+    username = request.user.username
+    if cache.get(username+'round'):
+        cache.delete(username+'round')
+        cache.delete(username)
+        cache.delete(username+'record')
     return render(request, "play.html", {})
 
 @login_required
@@ -21,7 +32,7 @@ def game(request):
     if cache.get(username+'round'): #在回合內
         if cache.get(username+'round') == 5: #回合結束
             cache.delete(username+'round')
-            return render(request, "result.html", {})
+            return HttpResponseRedirect(reverse('result'))
         else:
             cache.incr(username+'round') #增加回合數
             cache.set(username, pickle.dumps(get_random_question()), 10) #隨機拿一題，並設置時間
@@ -64,13 +75,38 @@ def answer(request):
         cache.delete(username)
         select_option = question.choices.all().filter(description=select_value).first()
         if cache.get(username+'record'): #如果有對戰紀錄
-            r = pickle.loads(cache.get(username+'record')) 
-            cache.set(username+'record', r.append(select_option), 15)
+            r = pickle.loads(cache.get(username+'record'))
+            r.append(select_option)
+            cache.set(username+'record', pickle.dumps(r), 15)
         else:
-            cache.set(username+'record', pickle.dumps([select_option]), 15)
-        #cache.set(username+'record'+'1', pickle.dumps(question.objects.filter()), 10) #一筆紀錄
+            r = []
+            r.append(select_option)
+            cache.set(username+'record', pickle.dumps(r), 15)
         return HttpResponseRedirect(reverse('game'))
     else: # 時間外回答
         print('timeout')
-        return HttpResponseRedirect(reverse('game'))
+        cache.delete(username+'round')
+        cache.delete(username)
+        cache.delete(username+'record')
+        return HttpResponseRedirect(reverse('result'))
 
+@login_required
+def result(request):
+    username = request.user.username
+    if cache.get(username+'record'): #有紀錄
+        r = pickle.loads(cache.get(username+'record'))
+        record = Record()
+        record.save()
+        for i in r:
+            record.options.add(i)
+            record.save()
+        if History.objects.filter(user=request.user).first():
+            history = History.objects.filter(user=request.user).first()
+            history.records.add(record)
+            history.save()
+        else:
+            history = History(user=request.user)
+            history.save()
+            history.records.add(record)
+            history.save()
+    return render(request, "result.html", {})
