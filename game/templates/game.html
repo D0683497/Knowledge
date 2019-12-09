@@ -9,18 +9,16 @@
         <div id="time" class="progress-bar progress-bar-striped bg-danger progress-bar-animated" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
     <hr>
-    <div class="card border-dark">
-        <div class="card-header bg-transparent border-dark" id="topic"></div>
-        <div class="card-body text-dark">
-            <form>
-                <button type="button" class="btn btn-info btn-block" id="option0"></button>
-                <button type="button" class="btn btn-info btn-block my-3" id="option1"></button>
-                <button type="button" class="btn btn-info btn-block my-3" id="option2"></button>
-                <button type="button" class="btn btn-info btn-block" id="option3"></button>
-            </form>
-        </div>
-    </div>
+    <div class="alert alert-secondary" role="alert" id="topic"></div>
+    <form action="{% url 'answer' %}" method="POST" id="option">
+        {% csrf_token %}
+        <input  type="submit" class="btn btn-info btn-block" id="option0" name="option" value="0"></input >
+        <input  type="submit" class="btn btn-info btn-block my-3" id="option1" name="option" value="1"></input >
+        <input  type="submit" class="btn btn-info btn-block my-3" id="option2" name="option" value="2"></input >
+        <input  type="submit" class="btn btn-info btn-block" id="option3" name="option" value="3"></input >
+    </form>
     <hr>
+    <!--
     <div class="d-flex justify-content-center">
         <div class="spinner-grow text-primary mx-3" style="width: 3rem; height: 3rem;" role="status">
             <span class="sr-only">Loading...</span>
@@ -32,12 +30,7 @@
             <span class="sr-only">Loading...</span>
         </div>
     </div>
-    <hr>
-    <!-- 測試用 -->
-    <form action="{% url 'game' %}" method="POST">
-        {% csrf_token %} 
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+    -->
 </div>
 {% endblock %}
 
@@ -65,6 +58,8 @@
                     } else {
                         // 移除 progress，並添加 alert 時間到了
                         document.getElementById("time").remove();
+                        document.getElementById("topic").remove();
+                        document.getElementById("option").remove();
                         document.getElementById("progress").classList.add('alert');
                         document.getElementById("progress").classList.add('alert-success');
                         document.getElementById("progress").classList.add('text-center');

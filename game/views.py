@@ -1,14 +1,14 @@
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
+from django.urls import reverse
+from django.core.cache import cache
+from django.db.models import Max
 
 from .models import Question, Option
 
 import json
-
-from django.core.cache import cache
 import pickle
-from django.db.models import Max
 import random
 
 @login_required
@@ -18,10 +18,17 @@ def play(request):
 @login_required
 def game(request):
     username = request.user.username
-    if request.method == 'POST':
-        return render(request, "game.html", {})
-    else:
-        cache.set(username, pickle.dumps(get_random_question()), 300) # 隨機拿一題
+    if cache.get(username+'round'): #在回合內
+        if cache.get(username+'round') == 5: #回合結束
+            cache.delete(username+'round')
+            return render(request, "result.html", {})
+        else:
+            cache.incr(username+'round') #增加回合數
+            cache.set(username, pickle.dumps(get_random_question()), 10) #隨機拿一題，並設置時間
+            return render(request, "game.html", {})
+    else: #不再回合內
+        cache.set(username+'round', 1, 300) #設置回合
+        cache.set(username, pickle.dumps(get_random_question()), 10) #隨機拿一題，並設置時間
         return render(request, "game.html", {})
 
 """
@@ -35,9 +42,7 @@ def question(request):
     data['topic'] = q.topic
     for index, option in enumerate(q.choices.all()):
         data['option'+str(index)] = option.description
-    cache.set(username, 'question', 60) # 設置時間
     return JsonResponse(data)
-    # 沒驗證回合
 
 def get_random_question():
     max_id = Question.objects.all().aggregate(max_id=Max("id"))['max_id']
@@ -50,11 +55,13 @@ def get_random_question():
 """
 驗證回答
 """
-"""
 @login_required
 def answer(request):
     username = request.user.username
     if cache.get(username): # 時間內回答
-
+        select_option = request.POST.get('option')
+        return HttpResponseRedirect(reverse('game'))
     else: # 時間外回答
-"""
+        print('timeout')
+        return HttpResponseRedirect(reverse('game'))
+
