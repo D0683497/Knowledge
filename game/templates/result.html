@@ -8,5 +8,23 @@
     <h3>結束</h3>
     <hr>
     <a class="btn btn-primary" href="{% url 'game' %}" role="button">開始遊戲</a>
+    <hr>
+    {% if record %}
+        {{ record.created_at }}
+        <hr>
+        {% for select_option in record.options.all %}
+            題目:{{ select_option.question.topic }}
+            <hr>
+            {% for option in select_option.question.choices.all %}
+                {% if select_option.id == option.id %}
+                    你選的選項:{{ option }}<br>
+                {% else %}
+                    選項:{{ option }}<br>
+                {% endif %}
+            {% endfor %}
+            <hr>
+        {% endfor %}
+    {% endif %}
+
 </div>
 {% endblock %}

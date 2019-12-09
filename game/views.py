@@ -94,19 +94,17 @@ def answer(request):
 def result(request):
     username = request.user.username
     if cache.get(username+'record'): #有紀錄
-        r = pickle.loads(cache.get(username+'record'))
+        r = pickle.loads(cache.get(username+'record')) #選項紀錄
+        total_score = 0
         record = Record()
         record.save()
         for i in r:
+            total_score = total_score + i.score #算分數
             record.options.add(i)
             record.save()
-        if History.objects.filter(user=request.user).first():
-            history = History.objects.filter(user=request.user).first()
-            history.records.add(record)
-            history.save()
-        else:
-            history = History(user=request.user)
-            history.save()
-            history.records.add(record)
-            history.save()
-    return render(request, "result.html", {})
+        history = History.objects.filter(user=request.user).first()
+        history.records.add(record)
+        history.save()
+        return render(request, "result.html", {'record': record})
+    else: # 沒紀錄
+        return render(request, "result.html", {})
