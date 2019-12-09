@@ -146,3 +146,7 @@ CACHES = {
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
 SESSION_CACHE_ALIAS = "default"
+
+# IMPORT_EXPORT
+
+IMPORT_EXPORT_USE_TRANSACTIONS = True
