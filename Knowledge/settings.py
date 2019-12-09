@@ -31,7 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -128,19 +127,6 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 AUTH_USER_MODEL = 'game.ExtendUser'
 
 LOGIN_REDIRECT_URL = '/'
-
-# SERVER
-
-ASGI_APPLICATION = 'Knowledge.routing.application'
-
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [('127.0.0.1', 6379)],
-        },
-    }
-}
 
 # REDIS
 
