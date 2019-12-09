@@ -12,7 +12,7 @@ class ExtendUser(AbstractUser):
 """
 class Question(models.Model):
     topic = models.CharField(max_length=10000) # 題目
-
+    solution = models.CharField(max_length=1000) # 詳解
     created_at = models.DateTimeField(auto_now_add=True, editable=False) # 創建時間
     modified_at = models.DateTimeField(auto_now=True, editable=False) # 修改時間
     is_active = models.BooleanField(default=True) # 是否公開

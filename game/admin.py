@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from .models import ExtendUser, Question, Option, Record, History
 
 # Register your models here.
