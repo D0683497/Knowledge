@@ -3,77 +3,104 @@
 
 {% block title %}知識王{% endblock %}
 
+{% block head %}
+<!-- development version, includes helpful console warnings -->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.1/qs.min.js"></script>
+{% endblock %}
+
 {% block content %}
-<div class="container">
+<div class="container" id="app">
     <div class="progress" id="progress">
-        <div id="time" class="progress-bar progress-bar-striped bg-danger progress-bar-animated" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-    </div>
-    <hr>
-    <div class="alert alert-secondary" role="alert" id="topic"></div>
-    <form action="{% url 'answer' %}" method="POST" id="option">
-        {% csrf_token %}
-        <input  type="submit" class="btn btn-info btn-block" id="option0" name="option" value="0"></input >
-        <input  type="submit" class="btn btn-info btn-block my-3" id="option1" name="option" value="1"></input >
-        <input  type="submit" class="btn btn-info btn-block my-3" id="option2" name="option" value="2"></input >
-        <input  type="submit" class="btn btn-info btn-block" id="option3" name="option" value="3"></input >
-    </form>
-    <hr>
-    <!--
-    <div class="d-flex justify-content-center">
-        <div class="spinner-grow text-primary mx-3" style="width: 3rem; height: 3rem;" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner-grow text-primary mx-3" style="width: 3rem; height: 3rem;" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner-grow text-primary mx-3" style="width: 3rem; height: 3rem;" role="status">
-            <span class="sr-only">Loading...</span>
+        <div id="time" class="progress-bar progress-bar-striped bg-danger progress-bar-animated" role="progressbar" :style="{width: countDown*10+'%'}" aria-valuemin="0" aria-valuemax="100">
+            還剩 [[ countDown ]] 秒
         </div>
     </div>
-    -->
+    <hr>
+    <div class="alert alert-secondary" role="alert">
+        [[ topic ]]
+    </div>
+    <hr>
+    <div v-for="(option, index) in options">
+        <button @click="send_answer(option)" :class="{'my-4': index!=0}" type="button" class="btn btn-primary btn-lg btn-block">
+            [[ option ]]
+        </button>
+    </div>
 </div>
 {% endblock %}
 
 {% block js %}
 <script>
-    $(document).ready(function() {
-        $.ajax({
-            type: "GET", //傳送方式
-            url: "{% url 'question' %}", //傳送目的地
-            success: function(data) {
-                console.log(data);
-                document.getElementById("topic").innerHTML = data['topic']
-                document.getElementById("option0").value = data['option0']
-                document.getElementById("option1").value = data['option1']
-                document.getElementById("option2").value = data['option2']
-                document.getElementById("option3").value = data['option3']
-                
-                // 計算秒數
-                var i = 10;
-                var counterBack = setInterval(function(){
-                    if(i >= 0){
-                        document.getElementById("time").style.width = i*10 +"%";
-                        document.getElementById("time").innerHTML = i + "秒";
-                        i--;
-                    } else {
-                        // 移除 progress，並添加 alert 時間到了
-                        document.getElementById("time").remove();
-                        document.getElementById("topic").remove();
-                        document.getElementById("option").remove();
-                        document.getElementById("progress").classList.add('alert');
-                        document.getElementById("progress").classList.add('alert-success');
-                        document.getElementById("progress").classList.add('text-center');
-                        document.getElementById("progress").classList.remove('progress');
-                        document.getElementById("progress").role = "alert";
-                        document.getElementById("progress").innerHTML = "~~時間到~~";
-                        clearTimeout(counterBack);
-                    }
-                }, 1000);
-            },
-            error: function(jqXHR) {
-                console.log("error");
+    var app = new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app',
+        data: {
+            topic: '',
+            options: [],
+            countDown : 10,
+        },
+        created: function () {
+            get_question();
+
+            let self = this;
+            function get_question () {
+                axios.get('{% url "question" %}')
+                .then((response) => {
+                    self.topic = response.data.topic;
+                    self.options.push(response.data.option0);
+                    self.options.push(response.data.option1);
+                    self.options.push(response.data.option2);
+                    self.options.push(response.data.option3);
+                });
             }
-        })
+
+            self.countDownTimer();
+        },
+        methods: {
+            send_answer: function (option) {
+                axios({
+                    method: 'post',
+                    url: '{% url "answer" %}',
+                    headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                    data: Qs.stringify({
+                        option: option
+                    })
+                })
+                .then((response) => {
+                    if (response.data.message == 'success') {
+                        let self = this;
+                        axios.get('{% url "question" %}')
+                        .then((response) => {
+                            if (response.data.message == 'success') {
+                                self.topic = '';
+                                self.options = []
+                                self.topic = response.data.topic;
+                                self.options.push(response.data.option0);
+                                self.options.push(response.data.option1);
+                                self.options.push(response.data.option2);
+                                self.options.push(response.data.option3);
+                                self.countDown = 10;
+                            }
+                            else if (response.data.message == 'result') {
+                                window.location = '{% url "result" %}';
+                            }
+                        });
+                    }
+                });
+            },
+            countDownTimer() {
+                if(this.countDown > 0) {
+                    setTimeout(() => {
+                        this.countDown -= 1
+                        this.countDownTimer()
+                    }, 1000)
+                } else {
+                    window.location = '{% url "result" %}';
+                }
+            }
+
+        }
     });
 </script>
 {% endblock %}
