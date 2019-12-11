@@ -29,6 +29,9 @@ def play(request):
 @login_required
 def game(request):
     username = request.user.username
+    cache.delete(username+'round')
+    cache.delete(username)
+    cache.delete(username+'record')
     if cache.get(username+'round'): #之前中離遊戲
         return render(request, "game.html", {})
     else:
@@ -40,7 +43,6 @@ def game(request):
 @login_required
 def question(request):
     username = request.user.username
-
     if cache.get(username+'round'): #回合中
         if cache.get(username+'round') == 5: #回合結束
             cache.delete(username+'round')
@@ -48,22 +50,22 @@ def question(request):
             return JsonResponse(data)
         else:
             q = get_random_question()
-            cache.incr(username+'round') #增加回合數
-            cache.set(username, pickle.dumps(q), 13) #隨機拿一題，並設置時間
+            cache.incr(username+'round')#增加回合數
+            cache.set(username, pickle.dumps(q), 13)#隨機拿一題，並設置時間
             data = {}
             data['message'] = 'success'
             data['topic'] = q.topic
-            for index, option in enumerate(q.choices.all()):
+            for index, option in enumerate(q.options.all()):
                 data['option'+str(index)] = option.description
             return JsonResponse(data)
     else: #開始回合
         q = get_random_question()
         cache.set(username+'round', 1, 300) #設置回合
-        cache.set(username, pickle.dumps(q), 13) #隨機拿一題，並設置時間
+        cache.set(username, pickle.dumps(q), 13)#隨機拿一題，並設置時間
         data = {}
         data['message'] = 'success'
         data['topic'] = q.topic
-        for index, option in enumerate(q.choices.all()):
+        for index, option in enumerate(q.options.all()):
             data['option'+str(index)] = option.description
         return JsonResponse(data)
 
@@ -86,7 +88,7 @@ def answer(request):
             select_value = request.POST.get('option')
             question = pickle.loads(cache.get(username))
             cache.delete(username)
-            select_option = question.choices.all().filter(description=select_value).first()
+            select_option = question.options.all().filter(description=select_value).first()
             if cache.get(username+'record'): #如果有對戰紀錄
                 r = pickle.loads(cache.get(username+'record'))
                 r.append(select_option)
@@ -115,6 +117,7 @@ def result(request):
             record.save()
             for i in r:
                 total_score = total_score + i.score #算分數
+                record.score = total_score
                 record.options.add(i)
                 record.save()
             if History.objects.filter(user=request.user).exists(): #之前有玩過，有紀錄
@@ -122,6 +125,7 @@ def result(request):
             else:
                 history = History(user=request.user)
                 history.save()
+            history.score = history.score + total_score
             history.records.add(record)
             history.save()
             cache.delete(username+'round')

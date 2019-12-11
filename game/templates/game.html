@@ -8,25 +8,62 @@
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.1/qs.min.js"></script>
+
+<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+<script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
 {% endblock %}
 
 {% block content %}
 <div class="container" id="app">
-    <div class="progress" id="progress">
-        <div id="time" class="progress-bar progress-bar-striped bg-danger progress-bar-animated" role="progressbar" :style="{width: countDown*10+'%'}" aria-valuemin="0" aria-valuemax="100">
-            還剩 [[ countDown ]] 秒
+    <div v-if="!isLoading">
+        <b-alert
+            :show="dismissCountDown"
+            variant="warning"
+            @dismissed="dismissCountDown=0"
+            @dismiss-count-down="countDownChanged"
+        >
+            <p class="text-center text-dark">剩餘 [[ dismissCountDown ]] 秒</p>
+            <b-progress
+                variant="danger"
+                :max="dismissSecs"
+                :value="dismissCountDown"
+                striped 
+                :animated="animate"
+            ></b-progress>
+        </b-alert>
+        <hr>
+        
+        <div class="alert alert-secondary" role="alert">
+            [[ topic ]]
+        </div>
+        <hr>
+        <div v-for="(option, index) in options">
+            <b-button 
+                pill
+                block 
+                variant="outline-secondary"
+                @click="send_answer(option)"
+                :class="{'my-4': index!=0}"
+            >
+                [[ option ]]
+            </b-button>
         </div>
     </div>
-    <hr>
-    <div class="alert alert-secondary" role="alert">
-        [[ topic ]]
-    </div>
-    <hr>
-    <div v-for="(option, index) in options">
-        <button @click="send_answer(option)" :class="{'my-4': index!=0}" type="button" class="btn btn-primary btn-lg btn-block">
-            [[ option ]]
-        </button>
-    </div>
+
+    <!-- Loading -->
+    <b-card
+        header="讀取題目中"
+        header-tag="header"
+        align="center"
+        border-variant="dark"
+        v-if="isLoading"
+    >
+        <b-card-text>
+            <b-spinner style="width: 3rem; height: 3rem;" type="grow" variant="info" label="Large Spinner"></b-spinner>
+            <b-spinner style="width: 3rem; height: 3rem;" type="grow" variant="info" label="Large Spinner"></b-spinner>
+            <b-spinner style="width: 3rem; height: 3rem;" type="grow" variant="info" label="Large Spinner"></b-spinner>
+        </b-card-text>
+    </b-card>
 </div>
 {% endblock %}
 
@@ -38,7 +75,9 @@
         data: {
             topic: '',
             options: [],
-            countDown : 10,
+            isLoading: false,
+            dismissSecs: 10, //總秒數
+            dismissCountDown: 0,
         },
         created: function () {
             get_question();
@@ -55,7 +94,7 @@
                 });
             }
 
-            self.countDownTimer();
+            self.dismissCountDown = self.dismissSecs;
         },
         methods: {
             send_answer: function (option) {
@@ -70,35 +109,36 @@
                 .then((response) => {
                     if (response.data.message == 'success') {
                         let self = this;
-                        axios.get('{% url "question" %}')
-                        .then((response) => {
-                            if (response.data.message == 'success') {
-                                self.topic = '';
-                                self.options = []
-                                self.topic = response.data.topic;
-                                self.options.push(response.data.option0);
-                                self.options.push(response.data.option1);
-                                self.options.push(response.data.option2);
-                                self.options.push(response.data.option3);
-                                self.countDown = 10;
-                            }
-                            else if (response.data.message == 'result') {
-                                window.location = '{% url "result" %}';
-                            }
-                        });
+
+                        self.isLoading = true;
+                        setTimeout(function(){
+                            axios.get('{% url "question" %}')
+                            .then((response) => {
+                                if (response.data.message == 'success') {
+                                    self.topic = '';
+                                    self.options = []
+                                    self.topic = response.data.topic;
+                                    self.options.push(response.data.option0);
+                                    self.options.push(response.data.option1);
+                                    self.options.push(response.data.option2);
+                                    self.options.push(response.data.option3);
+                                    self.dismissCountDown = self.dismissSecs;
+                                    self.isLoading = false;
+                                }
+                                else if (response.data.message == 'result') {
+                                    window.location = '{% url "result" %}';
+                                }
+                            });
+                        }, 2000);
                     }
                 });
             },
-            countDownTimer() {
-                if(this.countDown > 0) {
-                    setTimeout(() => {
-                        this.countDown -= 1
-                        this.countDownTimer()
-                    }, 1000)
-                } else {
+            countDownChanged(dismissCountDown) {
+                this.dismissCountDown = dismissCountDown
+                if (this.dismissCountDown == 0) {
                     window.location = '{% url "result" %}';
                 }
-            }
+            },
 
         }
     });
