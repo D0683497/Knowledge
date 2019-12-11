@@ -5,21 +5,29 @@
 
 {% block content %}
 <div class="container">
-    <h3>結束</h3>
-    <hr>
-    <a class="btn btn-primary" href="{% url 'game' %}" role="button">開始遊戲</a>
-    <hr>
-    {% if record %}
-        {{ record.created_at }}
+    {% if history %}
+        <h3>挑戰成功</h3>
         <hr>
-        {% for select_option in record.options.all %}
-            你選的選項:{{ select_option }}<br>
-            {% for i in select_option.question.all %}
-            {{ i }}<br>
-            {% endfor %}
+        <a class="btn btn-primary" href="{% url 'game' %}" role="button">開始遊戲</a>
+        <hr>
+        {{ history.created_at }}
+        <br>
+        得分: {{ history.score }}
+        <hr>
+        {% for record in history.record.all %}
+            你選的選項:{{ record.select_option }}<br>
+            {{ record.question.topic }}
+            {{ record.question.option_1 }}
+            {{ record.question.option_2 }}
+            {{ record.question.option_3 }}
+            {{ record.question.option_4 }}
+            {{ record.question.solution }}
+            <hr>
         {% endfor %}
     {% else %}
-        {{ fail }}
+        <h3>{{ fail }}</h3>
+        <hr>
+        <a class="btn btn-primary" href="{% url 'game' %}" role="button">開始遊戲</a>
     {% endif %}
 
 </div>

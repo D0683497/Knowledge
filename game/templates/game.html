@@ -27,8 +27,7 @@
                 variant="danger"
                 :max="dismissSecs"
                 :value="dismissCountDown"
-                striped 
-                :animated="animate"
+                striped
             ></b-progress>
         </b-alert>
         <hr>
@@ -87,16 +86,23 @@
                 axios.get('{% url "question" %}')
                 .then((response) => {
                     self.topic = response.data.topic;
-                    self.options.push(response.data.option0);
-                    self.options.push(response.data.option1);
-                    self.options.push(response.data.option2);
-                    self.options.push(response.data.option3);
+                    self.options.push(response.data.option_1);
+                    self.options.push(response.data.option_2);
+                    self.options.push(response.data.option_3);
+                    self.options.push(response.data.option_4);
                 });
             }
 
             self.dismissCountDown = self.dismissSecs;
         },
         methods: {
+            countDownChanged(dismissCountDown) {
+                this.dismissCountDown = dismissCountDown
+                if (this.dismissCountDown == 0) {
+                    this.send_answer(option='');
+                    // window.location = '{% url "result" %}';
+                }
+            },
             send_answer: function (option) {
                 axios({
                     method: 'post',
@@ -118,10 +124,10 @@
                                     self.topic = '';
                                     self.options = []
                                     self.topic = response.data.topic;
-                                    self.options.push(response.data.option0);
-                                    self.options.push(response.data.option1);
-                                    self.options.push(response.data.option2);
-                                    self.options.push(response.data.option3);
+                                    self.options.push(response.data.option_1);
+                                    self.options.push(response.data.option_2);
+                                    self.options.push(response.data.option_3);
+                                    self.options.push(response.data.option_4);
                                     self.dismissCountDown = self.dismissSecs;
                                     self.isLoading = false;
                                 }
@@ -132,12 +138,6 @@
                         }, 2000);
                     }
                 });
-            },
-            countDownChanged(dismissCountDown) {
-                this.dismissCountDown = dismissCountDown
-                if (this.dismissCountDown == 0) {
-                    window.location = '{% url "result" %}';
-                }
             },
 
         }

@@ -4,41 +4,40 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.core.cache import cache
 from django.db.models import Max
+from django.contrib.auth import get_user_model
 
-from .models import Question, Option, Record, History
+from .models import Question, Round, History, ExtendUser
 
 import json
 import pickle
 import random
 
 """
-usernamequestion: 紀錄一題題目及選項
-userround: 紀錄回合(一場五回合)
-userrecord: 紀錄答題記錄(用 list 的形式)
+usernamequestion: 紀錄題目id
+usernameoption: 紀錄選擇的選項
+userround: 紀錄回合(一場五回合)，15秒
 """
 
 @login_required
 def play(request):
     username = request.user.username
-    if cache.get(username+'round'):
-        cache.delete(username+'round')
-        cache.delete(username)
-        cache.delete(username+'record')
+    cache.delete(username+'question')
+    cache.delete(username+'option')
+    cache.delete(username+'round')
     return render(request, "play.html", {})
 
 @login_required
 def game(request):
     username = request.user.username
+    cache.delete(username+'question')
+    cache.delete(username+'option')
     cache.delete(username+'round')
-    cache.delete(username)
-    cache.delete(username+'record')
-    if cache.get(username+'round'): #之前中離遊戲
-        return render(request, "game.html", {})
-    else:
-        return render(request, "game.html", {})
+    return render(request, "game.html", {})
 
 """
 獲取問題
+set usernamequestion
+set userround 15秒
 """
 @login_required
 def question(request):
@@ -50,23 +49,35 @@ def question(request):
             return JsonResponse(data)
         else:
             q = get_random_question()
-            cache.incr(username+'round')#增加回合數
-            cache.set(username, pickle.dumps(q), 13)#隨機拿一題，並設置時間
-            data = {}
-            data['message'] = 'success'
-            data['topic'] = q.topic
-            for index, option in enumerate(q.options.all()):
-                data['option'+str(index)] = option.description
+            record_question = pickle.loads(cache.get(username+'question')) #拿取紀錄題目 list
+            record_question.append(q.id)
+            cache.set(username+'question', pickle.dumps(record_question)) #紀錄拿的題目
+            cache.incr(username+'round') #增加回合數
+            cache.touch(username+'round', 15)
+            data = {
+                'message': 'success',
+                'topic': q.topic,
+                'option_1': q.option_1,
+                'option_2': q.option_2,
+                'option_3': q.option_3,
+                'option_4': q.option_4,
+            }
             return JsonResponse(data)
     else: #開始回合
         q = get_random_question()
-        cache.set(username+'round', 1, 300) #設置回合
-        cache.set(username, pickle.dumps(q), 13)#隨機拿一題，並設置時間
-        data = {}
-        data['message'] = 'success'
-        data['topic'] = q.topic
-        for index, option in enumerate(q.options.all()):
-            data['option'+str(index)] = option.description
+        record_question = []
+        record_question.append(q.id)
+        cache.set(username+'question', pickle.dumps(record_question))
+        cache.set(username+'round', 1) #設置回合
+        cache.touch(username+'round', 15)
+        data = {
+            'message': 'success',
+            'topic': q.topic,
+            'option_1': q.option_1,
+            'option_2': q.option_2,
+            'option_3': q.option_3,
+            'option_4': q.option_4,
+        }
         return JsonResponse(data)
 
 def get_random_question():
@@ -79,66 +90,56 @@ def get_random_question():
 
 """
 驗證回答
+set usernameoption
 """
 @login_required
 def answer(request):
     username = request.user.username
     if request.method == 'POST':
-        if cache.get(username): # 時間內回答
+        if cache.get(username+'round'): # 時間內回答
             select_value = request.POST.get('option')
-            question = pickle.loads(cache.get(username))
-            cache.delete(username)
-            select_option = question.options.all().filter(description=select_value).first()
-            if cache.get(username+'record'): #如果有對戰紀錄
-                r = pickle.loads(cache.get(username+'record'))
-                r.append(select_option)
-                cache.set(username+'record', pickle.dumps(r), 15)
-            else:
-                r = []
-                r.append(select_option)
-                cache.set(username+'record', pickle.dumps(r), 15)
-            data = {'message': 'success'}
-            return JsonResponse(data)
         else: # 時間外回答
-            cache.delete(username+'round')
-            cache.delete(username)
-            cache.delete(username+'record')
-            data = {'error': '請尊重遊戲規則'}
-            return JsonResponse(data)
+            select_value = 'timeout'
+
+        if cache.get(username+'option'):
+            record_option = pickle.loads(cache.get(username+'option')) #拿取紀錄選項 list
+        else:
+            record_option = []
+        
+        record_option.append(select_value)
+        cache.set(username+'option', pickle.dumps(record_option))
+        data = {'message': 'success'}
+        return JsonResponse(data)
 
 @login_required
 def result(request):
     username = request.user.username
-    if cache.get(username+'record'): #有紀錄
-        r = pickle.loads(cache.get(username+'record')) #選項紀錄
-        if len(r) == 5:
-            total_score = 0
-            record = Record()
-            record.save()
-            for i in r:
-                total_score = total_score + i.score #算分數
-                record.score = total_score
-                record.options.add(i)
-                record.save()
-            if History.objects.filter(user=request.user).exists(): #之前有玩過，有紀錄
-                history = History.objects.filter(user=request.user).first()
-            else:
-                history = History(user=request.user)
-                history.save()
-            history.score = history.score + total_score
-            history.records.add(record)
+    record_question = pickle.loads(cache.get(username+'question')) #拿取紀錄題目 list
+    record_option = pickle.loads(cache.get(username+'option')) #拿取紀錄選項 list
+    round_lst = []
+
+    if len(record_question) == 5 and len(record_option) == 5:
+        total_score = 0
+        for i in range(5):
+            question = Question.objects.filter(id=record_question[i]).first()
+            if question.correct_option == record_option[i]:
+                total_score = total_score + 1
+            oneround = Round(question=question, select_option=record_option[i])
+            oneround.save()
+            round_lst.append(oneround)
+        
+        history = History(score=total_score)
+        history.save()
+        for i in round_lst:
+            history.record.add(i)
             history.save()
-            cache.delete(username+'round')
-            cache.delete(username)
-            cache.delete(username+'record')
-            return render(request, "result.html", {'record': record})
-        else:
-            cache.delete(username+'round')
-            cache.delete(username)
-            cache.delete(username+'record')
-            return render(request, "result.html", {'fail': "挑戰失敗"})
-    else: # 沒紀錄
+
+        user = ExtendUser.objects.filter(username=username).first()
+        user.history.add(history)
+        user.save()
+        return render(request, "result.html", {'history': history})
+    else:
+        cache.delete(username+'question')
+        cache.delete(username+'option')
         cache.delete(username+'round')
-        cache.delete(username)
-        cache.delete(username+'record')
-        return render(request, "result.html", {'fail': "發生錯誤"})
+        return render(request, "result.html", {'fail': "挑戰失敗"})
