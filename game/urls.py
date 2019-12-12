@@ -8,4 +8,5 @@ urlpatterns = [
     path('get_question', views.question, name='question'),
     path('answer', views.answer, name='answer'),
     path('result', views.result, name='result'),
+    path('get_result', views.get_result, name='get_result'),
 ]

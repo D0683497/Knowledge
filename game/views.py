@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.core.cache import cache
 from django.db.models import Max
 from django.contrib.auth import get_user_model
+from django.core import serializers
 
 from .models import Question, Round, History, ExtendUser
 
@@ -112,7 +113,11 @@ def answer(request):
         return JsonResponse(data)
 
 @login_required
-def result(request):
+def result(request):   
+    return render(request, "result.html", {})
+
+@login_required
+def get_result(request):
     username = request.user.username
     record_question = pickle.loads(cache.get(username+'question')) #拿取紀錄題目 list
     record_option = pickle.loads(cache.get(username+'option')) #拿取紀錄選項 list
@@ -137,9 +142,72 @@ def result(request):
         user = ExtendUser.objects.filter(username=username).first()
         user.history.add(history)
         user.save()
-        return render(request, "result.html", {'history': history})
+
+        data = {
+            'message': '挑戰成功',
+            'time' :history.created_at,
+            'score': history.score,
+            'question': [
+                {
+                    'topic': history.record.all()[0].question.topic,
+                    'solution': history.record.all()[0].question.solution,
+                    'option_1': history.record.all()[0].question.option_1,
+                    'option_2': history.record.all()[0].question.option_2,
+                    'option_3': history.record.all()[0].question.option_3,
+                    'option_3': history.record.all()[0].question.option_4,
+                    'correct_option': history.record.all()[0].question.correct_option,
+                    'select_option': history.record.all()[0].select_option,
+                },
+                {
+                    'topic': history.record.all()[1].question.topic,
+                    'solution': history.record.all()[1].question.solution,
+                    'option_1': history.record.all()[1].question.option_1,
+                    'option_2': history.record.all()[1].question.option_2,
+                    'option_3': history.record.all()[1].question.option_3,
+                    'option_3': history.record.all()[1].question.option_4,
+                    'correct_option': history.record.all()[1].question.correct_option,
+                    'select_option': history.record.all()[1].select_option,
+                },
+                {
+                    'topic': history.record.all()[2].question.topic,
+                    'solution': history.record.all()[2].question.solution,
+                    'option_1': history.record.all()[2].question.option_1,
+                    'option_2': history.record.all()[2].question.option_2,
+                    'option_3': history.record.all()[2].question.option_3,
+                    'option_3': history.record.all()[2].question.option_4,
+                    'correct_option': history.record.all()[2].question.correct_option,
+                    'select_option': history.record.all()[2].select_option,
+                },
+                {
+                    'topic': history.record.all()[3].question.topic,
+                    'solution': history.record.all()[3].question.solution,
+                    'option_1': history.record.all()[3].question.option_1,
+                    'option_2': history.record.all()[3].question.option_2,
+                    'option_3': history.record.all()[3].question.option_3,
+                    'option_3': history.record.all()[3].question.option_4,
+                    'correct_option': history.record.all()[3].question.correct_option,
+                    'select_option': history.record.all()[3].select_option,
+                },
+                {
+                    'topic': history.record.all()[4].question.topic,
+                    'solution': history.record.all()[4].question.solution,
+                    'option_1': history.record.all()[4].question.option_1,
+                    'option_2': history.record.all()[4].question.option_2,
+                    'option_3': history.record.all()[4].question.option_3,
+                    'option_3': history.record.all()[4].question.option_4,
+                    'correct_option': history.record.all()[4].question.correct_option,
+                    'select_option': history.record.all()[4].select_option,
+                }
+            ]
+        }
+
+        cache.delete(username+'question')
+        cache.delete(username+'option')
+        cache.delete(username+'round')
+        return JsonResponse(data)
     else:
         cache.delete(username+'question')
         cache.delete(username+'option')
         cache.delete(username+'round')
-        return render(request, "result.html", {'fail': "挑戰失敗"})
+        data = {'message': '挑戰失敗'}
+        return JsonResponse(data)

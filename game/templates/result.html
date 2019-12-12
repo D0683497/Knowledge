@@ -1,34 +1,95 @@
 {% extends "layout.html" %}
 {% load static %}
 
-{% block title %}資安週 - 知識王{% endblock %}
+{% block title %}知識王 - 結算{% endblock %}
+
+{% block head %}
+<!-- development version, includes helpful console warnings -->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.1/qs.min.js"></script>
+
+<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+<script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
+{% endblock %}
 
 {% block content %}
-<div class="container">
-    {% if history %}
-        <h3>挑戰成功</h3>
+<div class="container" id="app">
+    <!-- Loading -->
+    <b-card
+        header="讀取結果中"
+        header-tag="header"
+        align="center"
+        border-variant="dark"
+        v-if="isLoading"
+    >
+        <b-card-text>
+            <b-spinner style="width: 3rem; height: 3rem;" type="grow" variant="info" label="Large Spinner"></b-spinner>
+            <b-spinner style="width: 3rem; height: 3rem;" type="grow" variant="info" label="Large Spinner"></b-spinner>
+            <b-spinner style="width: 3rem; height: 3rem;" type="grow" variant="info" label="Large Spinner"></b-spinner>
+        </b-card-text>
+    </b-card>
+    <div v-if="!isLoading">
+        <div class="d-flex justify-content-between">
+            <h3>挑戰成功</h3>
+            <a class="btn btn-primary" href="{% url 'game' %}" role="button">在玩一次</a>
+        </div>
         <hr>
-        <a class="btn btn-primary" href="{% url 'game' %}" role="button">開始遊戲</a>
-        <hr>
-        {{ history.created_at }}
-        <br>
-        得分: {{ history.score }}
-        <hr>
-        {% for record in history.record.all %}
-            你選的選項:{{ record.select_option }}<br>
-            {{ record.question.topic }}
-            {{ record.question.option_1 }}
-            {{ record.question.option_2 }}
-            {{ record.question.option_3 }}
-            {{ record.question.option_4 }}
-            {{ record.question.solution }}
-            <hr>
-        {% endfor %}
-    {% else %}
-        <h3>{{ fail }}</h3>
-        <hr>
-        <a class="btn btn-primary" href="{% url 'game' %}" role="button">開始遊戲</a>
-    {% endif %}
+        <b-card
+            title="Card Title"
+        >
+            <b-card-text>
+            Some quick example text to build on the card title and make up the bulk of the card's content.
+            </b-card-text>
 
+            <!-- 頁數 -->
+            <b-pagination
+                v-model="currentPage"
+                :per-page="perPage"
+                :total-rows="rows"
+            ></b-pagination>
+        </b-card>
+    </div>
 </div>
+{% endblock %}
+
+{% block js %}
+<script>
+    var app = new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app',
+        data: {
+            isLoading: true,
+            perPage: 5,
+            currentPage: 1,
+            score: 0,
+            time: '',
+            question: [],
+        },
+        created: function () {
+            get_result();
+
+            let self = this;
+            function get_result () {
+                axios.get('{% url "get_result" %}')
+                .then((response) => {
+                    if (response.data.message == '挑戰成功') {
+                        self.score = response.data.score;
+                        self.time = response.data.time;
+                        self.question = response.data.question;
+                        self.isLoading = false;
+                    } 
+                });
+            }
+        },
+        methods: {
+
+        },
+        computed: {
+            rows() {
+                return this.question.length
+            }
+        }
+    });
+</script>
 {% endblock %}
