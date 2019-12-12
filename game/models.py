@@ -32,6 +32,5 @@ class History(models.Model):
     score = models.IntegerField(default=0) # 分數
 
 class ExtendUser(AbstractUser):
-    studentId = models.CharField(max_length=10) #學號
-    nickname = models.CharField(max_length=10) #暱稱
+    studentId = models.CharField(max_length=10, unique=True) #學號
     history = models.ManyToManyField(History)
