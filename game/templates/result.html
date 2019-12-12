@@ -31,25 +31,90 @@
     </b-card>
     <div v-if="!isLoading">
         <div class="d-flex justify-content-between">
-            <h3>挑戰成功</h3>
+            <h3>成績結算</h3>
             <a class="btn btn-primary" href="{% url 'game' %}" role="button">在玩一次</a>
         </div>
         <hr>
         <b-card
-            title="Card Title"
+            header-tag="header"
+            footer-tag="footer"
+            no-body
         >
-            <b-card-text>
-            Some quick example text to build on the card title and make up the bulk of the card's content.
-            </b-card-text>
+            <template v-slot:header>
+                <div class="d-flex justify-content-between">
+                    <span>分數: [[ score ]]</span>
+                    <span>挑戰時間: [[ time ]]</span>
+                </div>
+            </template>
+            
+            <div class="card border-dark m-1">
+                <div class="card-header border-dark bg-transparent">[[ topic ]]</div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        <li 
+                            class="list-group-item" 
+                            :class="{ 'list-group-item-success' : option_1==correct_option, 'list-group-item-info' : option_1==select_option }"
+                        >
+                            [[ option_1 ]]
+                        </li>
+                        <li 
+                            class="list-group-item" 
+                            :class="{ 'list-group-item-success' : option_2==correct_option, 'list-group-item-info' : option_2==select_option }"
+                        >
+                            [[ option_2 ]]
+                        </li>
+                        <li 
+                            class="list-group-item" 
+                            :class="{ 'list-group-item-success' : option_3==correct_option, 'list-group-item-info' : option_3==select_option }"
+                        >
+                            [[ option_3 ]]
+                        </li>
+                        <li 
+                            class="list-group-item" 
+                            :class="{ 'list-group-item-success' : option_4==correct_option, 'list-group-item-info' : option_4==select_option }"
+                        >
+                            [[ option_4 ]]
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer border-dark bg-transparent d-flex justify-content-between">
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#solutionModal">詳解</button>
+                    <button type="button" class="btn btn-warning">回報問題</button>
+                </div>
+            </div>
 
-            <!-- 頁數 -->
-            <b-pagination
-                v-model="currentPage"
-                :per-page="perPage"
-                :total-rows="rows"
-            ></b-pagination>
+            <template v-slot:footer>
+                <!-- 頁數 -->
+                <b-pagination
+                    v-model="currentPage"
+                    :per-page="perPage"
+                    :total-rows="rows"
+                    align="fill"
+                    aria-controls="my-card"
+                ></b-pagination>
+            </template>
         </b-card>
     </div>
+    <!-- 詳解 -->
+    <div class="modal fade" id="solutionModal" tabindex="-1" role="dialog" aria-labelledby="solutionModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalCenterTitle">詳解</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                [[ solution ]]
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-warning">回報問題</button>
+            </div>
+          </div>
+        </div>
+      </div>
 </div>
 {% endblock %}
 
@@ -60,7 +125,7 @@
         el: '#app',
         data: {
             isLoading: true,
-            perPage: 5,
+            perPage: 1,
             currentPage: 1,
             score: 0,
             time: '',
@@ -74,8 +139,10 @@
                 axios.get('{% url "get_result" %}')
                 .then((response) => {
                     if (response.data.message == '挑戰成功') {
+                        console.log(response.data);
                         self.score = response.data.score;
-                        self.time = response.data.time;
+                        var t = new Date(response.data.time);
+                        self.time = (t.getMonth()+1) + '/' + t.getDate() + ' ' + t.getHours() + ':' + t.getMinutes(); //getMonth從0開始，要加1
                         self.question = response.data.question;
                         self.isLoading = false;
                     } 
@@ -88,6 +155,30 @@
         computed: {
             rows() {
                 return this.question.length
+            },
+            topic() {
+                return this.question[this.currentPage-1].topic
+            },
+            option_1() {
+                return this.question[this.currentPage-1].option_1
+            },
+            option_2() {
+                return this.question[this.currentPage-1].option_2
+            },
+            option_3() {
+                return this.question[this.currentPage-1].option_3
+            },
+            option_4() {
+                return this.question[this.currentPage-1].option_4
+            },
+            correct_option() {
+                return this.question[this.currentPage-1].correct_option
+            },
+            select_option() {
+                return this.question[this.currentPage-1].select_option
+            },
+            solution() {
+                return this.question[this.currentPage-1].solution
             }
         }
     });
