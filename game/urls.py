@@ -9,4 +9,5 @@ urlpatterns = [
     path('answer', views.answer, name='answer'),
     path('result', views.result, name='result'),
     path('get_result', views.get_result, name='get_result'),
+    path('report', views.report, name='report'),
 ]

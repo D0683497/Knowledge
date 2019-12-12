@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 
-from .models import ExtendUser, Question, Round, History
+from .models import ExtendUser, Question, Round, History, Report
 from .resources import QuestionResource
 
 class QuestionAdmin(ImportExportModelAdmin):
@@ -11,3 +11,4 @@ admin.site.register(ExtendUser)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Round)
 admin.site.register(History)
+admin.site.register(Report)

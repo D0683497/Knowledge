@@ -79,7 +79,7 @@
                 </div>
                 <div class="card-footer border-dark bg-transparent d-flex justify-content-between">
                     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#solutionModal">詳解</button>
-                    <button type="button" class="btn btn-warning">回報問題</button>
+                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#reportModal">回報問題</button>
                 </div>
             </div>
 
@@ -109,12 +109,36 @@
                 [[ solution ]]
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-warning">回報問題</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-dismiss="modal" data-target="#reportModal">回報問題</button>
             </div>
           </div>
         </div>
-      </div>
+    </div>
+
+    <!-- 回報問題 -->
+    <div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">問題回報</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="description">問題描述</label>
+                    <input id="description" name="description" v-model="description" type="text" maxlength="200" autofocus required class="form-control"></input>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" @click="send_report()" data-dismiss="modal">送出</button>
+            </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -130,6 +154,7 @@
             score: 0,
             time: '',
             question: [],
+            description: '',
         },
         created: function () {
             get_result();
@@ -139,7 +164,6 @@
                 axios.get('{% url "get_result" %}')
                 .then((response) => {
                     if (response.data.message == '挑戰成功') {
-                        console.log(response.data);
                         self.score = response.data.score;
                         var t = new Date(response.data.time);
                         self.time = (t.getMonth()+1) + '/' + t.getDate() + ' ' + t.getHours() + ':' + t.getMinutes(); //getMonth從0開始，要加1
@@ -150,7 +174,35 @@
             }
         },
         methods: {
-
+            send_report: function () {
+                let self = this;
+                axios({
+                    method: 'post',
+                    url: '{% url "report" %}',
+                    headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                    data: Qs.stringify({
+                        topic: self.topic,
+                        description: self.description
+                    })
+                })
+                .then((response) => {
+                    if (response.data.message == 'success') {
+                        self.$bvToast.toast("感謝您的回報，我們會盡快審查您的疑問", {
+                            title: '已收到您的問題',
+                            variant: 'success',
+                            autoHideDelay: 5000,
+                        });
+                        self.description = "";
+                    } else if (response.data.message == 'fail') {
+                        self.$bvToast.toast("您是否有欄位尚未填寫?", {
+                            title: '發送失敗',
+                            variant: 'danger',
+                            autoHideDelay: 5000,
+                        });
+                        self.description = "";
+                    }
+                });
+            }
         },
         computed: {
             rows() {

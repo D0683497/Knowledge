@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
 from django.db import models
 
 """
@@ -34,3 +35,16 @@ class History(models.Model):
 class ExtendUser(AbstractUser):
     studentId = models.CharField(max_length=10, unique=True) #學號
     history = models.ManyToManyField(History)
+
+"""
+錯誤回報
+"""
+class Report(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE) #回報的問題
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE) #回報的人
+    description = models.CharField(max_length=200) #問題描述
+    repair = models.BooleanField(default=False) #是否修復
+
+    def __str__(self):
+        return self.question.topic + '[' + self.user.username + ']' + '[' + str(self.repair) + ']'

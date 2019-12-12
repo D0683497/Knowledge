@@ -7,7 +7,7 @@ from django.db.models import Max
 from django.contrib.auth import get_user_model
 from django.core import serializers
 
-from .models import Question, Round, History, ExtendUser
+from .models import Question, Round, History, ExtendUser, Report
 
 import json
 import pickle
@@ -211,3 +211,18 @@ def get_result(request):
         cache.delete(username+'round')
         data = {'message': '挑戰失敗'}
         return JsonResponse(data)
+
+@login_required
+def report(request):
+    user = request.user
+    if request.method == 'POST':
+        topic = request.POST.get('topic')
+        description = request.POST.get('description')
+        if topic and description:
+            question = Question.objects.filter(topic=topic).first()
+            Report.objects.create(question=question, user=user, description=description)
+            data = {'message': 'success'}
+            return JsonResponse(data)
+        else:
+            data = {'message': 'fail'}
+            return JsonResponse(data)
