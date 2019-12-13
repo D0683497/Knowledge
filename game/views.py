@@ -226,3 +226,5 @@ def report(request):
         else:
             data = {'message': 'fail'}
             return JsonResponse(data)
+
+
