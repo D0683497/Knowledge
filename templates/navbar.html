@@ -6,8 +6,14 @@
     <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav mr-auto">
             {% if user.is_authenticated %}
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'play' %}">玩遊戲</a>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="game" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    知識王
+                </a>
+                <div class="dropdown-menu" aria-labelledby="game">
+                    <a class="dropdown-item" href="{% url 'play' %}">玩遊戲</a>
+                    <a class="dropdown-item" href="{% url 'rank' %}">排行榜</a>
+                </div>
             </li>
             {% else %}
 

@@ -227,4 +227,18 @@ def report(request):
             data = {'message': 'fail'}
             return JsonResponse(data)
 
+@login_required
+def rank(request):
+    return render(request, "rank.html", {})
 
+@login_required
+def get_rank(request):
+    user_lst = ExtendUser.objects.all()
+    data = []
+    for index, user in enumerate(user_lst):
+        username = user.username
+        score = 0
+        for history in user.history.all():
+            score = score + history.score
+        data.append({'id': index, 'username': username, 'score': score})
+    return JsonResponse({'currentuser': request.user.username, 'rank': data})
