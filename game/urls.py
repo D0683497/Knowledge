@@ -12,4 +12,6 @@ urlpatterns = [
     path('report', views.report, name='report'),
     path('rank', views.rank, name='rank'),
     path('get_rank', views.get_rank, name='get_rank'),
+    path('exercise', views.exercise, name='exercise'),
+    path('get_exercise', views.get_exercise, name='get_exercise'),
 ]

@@ -242,3 +242,23 @@ def get_rank(request):
             score = score + history.score
         data.append({'id': index, 'username': username, 'score': score})
     return JsonResponse({'currentuser': request.user.username, 'rank': data})
+
+@login_required
+def exercise(request):
+    return render(request, "exercise.html", {})
+
+@login_required
+def get_exercise(request):
+    question_lst = Question.objects.all()
+    data = []
+    for index, question in enumerate(question_lst):
+        data.append({
+            'id': index, 
+            'topic': question.topic, 
+            'solution': question.solution, 
+            'option_1': question.option_1,
+            'option_2': question.option_2,
+            'option_3': question.option_3,
+            'option_4': question.option_4,
+            'correct_option': question.correct_option})
+    return JsonResponse({'questions': data})
