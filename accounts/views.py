@@ -3,7 +3,8 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
-from .forms import SignUpForm
+from game.models import ExtendUser
+from .forms import SignUpForm, ManageForm
 
 def register(request):
     if request.method == 'POST':
@@ -19,4 +20,14 @@ def register(request):
 
 @login_required
 def manage(request):
-    return render(request, 'registration/manage.html', {})
+    user = ExtendUser.objects.filter(username=request.user.username).first()
+    if request.method == 'POST':
+        form = ManageForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('index'))
+        else:
+            return render(request, 'registration/manage.html', {'form': form})
+    else:
+        form = ManageForm(instance=user)
+    return render(request, 'registration/manage.html', {'form': form})

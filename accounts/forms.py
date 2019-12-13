@@ -1,4 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm
+from django.forms import ModelForm
 from django.core.exceptions import ValidationError
 from game.models import ExtendUser
 
@@ -14,3 +15,8 @@ class SignUpForm(UserCreationForm):
             return studentId
         else:
             raise ValidationError("學號的格式怪怪的")
+
+class ManageForm(ModelForm):
+    class Meta:
+        model = ExtendUser
+        fields = ('username', 'first_name', 'last_name', 'email', 'studentId')
