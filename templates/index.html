@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "vuetify_layout.html" %}
 {% load static %}
 
 {% block head %}
@@ -8,7 +8,97 @@
 {% block title %}資安週{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container" id="app">
+    <h3>特別感謝</h3>
+    <template>
+        <v-item-group>
+            <v-container>
+                <v-row>
+                    <v-col cols="12" md="4">
+                        <v-item>
+                            <v-card>
+                                <v-img
+                                    src="{% static "image/IECS.png" %}"
+                                    height="200px"                                    
+                                    contain
+                                >
+                                </v-img>
+                                <v-card-title>逢甲大學資訊工程學系</v-card-title>
+                            </v-card>
+                        </v-item>
+                    </v-col>
+                    <v-col cols="12" md="4">
+                        <v-item>
+                            <v-card>
+                                <v-img
+                                    src="{% static "image/HackerSir.png" %}"
+                                    height="200px"
+                                    contain
+                                >  
+                                </v-img>
+                                <v-card-title>逢甲大學黑客社</v-card-title>
+                            </v-card>
+                        </v-item>
+                    </v-col>
+                    <v-col cols="12" md="4">
+                        <v-item>
+                            <v-card>
+                                <v-img
+                                    src="{% static "image/ISIP.jpg" %}"
+                                    height="200px"
+                                    contain
+                                >
+                                </v-img>
+                                <v-card-title>教育部資安人才培育計畫</v-card-title>
+                            </v-card>
+                        </v-item>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col cols="12" md="4">
+                        <v-item>
+                            <v-card>
+                                <v-img
+                                    src="{% static "image/資安關鍵技術基礎研發計畫.jpg" %}"
+                                    height="200px"                                    
+                                    contain
+                                >
+                                </v-img>
+                                <v-card-title>資安關鍵技術基礎研發計畫</v-card-title>
+                            </v-card>
+                        </v-item>
+                    </v-col>
+                    <v-col cols="12" md="4">
+                        <v-item>
+                            <v-card>
+                                <v-img
+                                    src="{% static "image/3A.jpg" %}"
+                                    height="200px"
+                                    contain
+                                >  
+                                </v-img>
+                                <v-card-title>三甲科技</v-card-title>
+                            </v-card>
+                        </v-item>
+                    </v-col>
+                    <v-col cols="12" md="4">
+                        <v-item>
+                            <v-card>
+                                <v-img
+                                    src="{% static "image/OIT.jpg" %}"
+                                    height="200px"
+                                    contain
+                                >
+                                </v-img>
+                                <v-card-title>逢甲大學資訊處</v-card-title>
+                            </v-card>
+                        </v-item>
+                    </v-col>
+                </v-row>
+            </v-container>
+        </v-item-group>
+    </template>
+    <!--
     <div class="jumbotron">
         <h1 class="display-4">Information Security Week</h1>
         <p class="lead">
@@ -20,18 +110,6 @@
     <h3>特別感謝</h3>
     <div class="card-group">
         <div class="card">
-            <img src="{% static "image/ISIP.jpg" %}" class="card-img-top" alt="教育部資安人才培育計畫">
-            <div class="card-body">
-                <h5 class="card-title">教育部資安人才培育計畫</h5>
-            </div>
-        </div>
-        <div class="card">
-            <img src="{% static "image/資安關鍵技術基礎研發計畫.jpg" %}" class="card-img-top" alt="資安關鍵技術基礎研發計畫">
-            <div class="card-body">
-                <h5 class="card-title">資安關鍵技術基礎研發計畫</h5>
-            </div>
-        </div>
-        <div class="card">
             <img src="{% static "image/3A.jpg" %}" class="card-img-top" alt="三甲科技">
             <div class="card-body">
                 <h5 class="card-title">三甲科技</h5>
@@ -39,12 +117,6 @@
         </div>
     </div>
     <div class="card-group">
-        <div class="card">
-            <img src="{% static "image/IECS.png" %}" class="card-img-top" alt="逢甲大學資訊工程學系">
-            <div class="card-body">
-                <h5 class="card-title">逢甲大學資訊工程學系</h5>
-            </div>
-        </div>
         <div class="card">
             <img src="{% static "image/HackerSir.png" %}" class="card-img-top" alt="逢甲大學黑客社">
             <div class="card-body">
@@ -54,5 +126,17 @@
         <div class="card">
         </div>
     </div>
+    -->
 </div>
+{% endblock %}
+
+{% block js %}
+<script>
+new Vue({
+    el: '#app',
+    vuetify: new Vuetify(),
+    data: {
+    }
+})
+</script>
 {% endblock %}
