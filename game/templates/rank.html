@@ -7,35 +7,33 @@
 <div class="container" id="app">
     <div class="d-flex justify-content-between">
         <h3>排行榜</h3>
-        <a class="btn btn-primary" href="{% url 'game' %}" role="button">在玩一次</a>
+        <v-btn href="{% url 'game' %}" role="button">再玩一次</v-btn>
     </div>
     <hr>
-    <b-table
-        id="game-rank"
-        :items="ranks"
-        :per-page="perPage"
-        :current-page="currentPage"
-        :fields="fields"
-        :tbody-tr-class="rowClass"
-        :busy="isLoading"
-        head-variant="light"
-        hover
-        outlined
-    >
-        <template v-slot:table-busy>
-            <div class="text-center my-2">
-                <b-spinner class="align-middle"></b-spinner>
-                <strong>讀取資料中...</strong>
-            </div>
-        </template>
-    </b-table>
-    <b-pagination
-        v-model="currentPage"
-        :total-rows="rows"
-        :per-page="perPage"
-        aria-controls="game-rank"
-        align="fill"
-    ></b-pagination>
+    <v-text-field
+        v-model="search"
+        label="Search"
+        single-line
+        hide-details
+    ></v-text-field>
+    <v-data-table
+    :headers="fields"
+    :items="ranks"
+    :page.sync="currentPage"
+    :search="search"
+    class="elevation-1"
+    @page-count="pageCount = $event"
+    hide-default-footer
+    ></v-data-table>
+    <v-text-field
+        :value="perPage"
+        label="Items per page"
+        type="number"
+        min="1"
+        max="10"
+        @input="perPage = parseInt($event, 10)"
+    ></v-text-field>
+    <v-pagination v-model="currentPage" :length="pageCount" color="bg-primary"></v-pagination>
 </div>
 {% endblock %}
 
@@ -44,15 +42,18 @@
     var app = new Vue({
         delimiters: ['[[', ']]'],
         el: '#app',
+        vuetify: new Vuetify(),
         data: {
             isLoading: true,
             perPage: 10,
             currentPage: 1,
+            pageCount: 0,
             username: '',
+            search: '',
             ranks: [],
             fields: [
-                {key: 'username', label: '玩家'}, 
-                {key: 'score', label: '總分', sortable: true}
+                {value: 'username', text: '玩家'}, 
+                {value: 'score', text: '總分', sortable: true, filterable: false}
             ]
         },
         created: function () {

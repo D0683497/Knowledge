@@ -58,7 +58,7 @@
 
             <template v-slot:footer>
                 <!-- 頁數 -->
-                <v-pagination v-model="currentPage" :length="rows" class="m-0">
+                <v-pagination v-model="currentPage" :length="rows" class="m-0" color="bg-primary">
                 </v-pagination>
             </template>
         </b-card>
@@ -78,8 +78,8 @@
                     [[ solution ]]
                 </div>
                 <div class="modal-footer">
-                    <v-btn type="button" class="btn btn-secondary" data-dismiss="modal">Close</v-btn>
-                    <v-btn type="button" class="btn btn-warning" data-toggle="modal" data-dismiss="modal"
+                    <v-btn type="button" class="btn btn-secondary bg-secondary" data-dismiss="modal">Close</v-btn>
+                    <v-btn type="button" class="btn btn-warning bg-warning" data-toggle="modal" data-dismiss="modal"
                         data-target="#reportModal">回報問題</v-btn>
                 </div>
             </div>
@@ -105,8 +105,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <v-btn type="button" class="btn btn-secondary" data-dismiss="modal">Close</v-btn>
-                    <v-btn type="button" class="btn btn-primary" @click="send_report()"
+                    <v-btn type="button" class="btn btn-secondary bg-secondary" data-dismiss="modal">Close</v-btn>
+                    <v-btn type="button" class="btn btn-primary bg-primary" @click="send_report()"
                         data-dismiss="modal">送出</v-btn>
                 </div>
             </div>
