@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "vuetify_layout.html" %}
 {% load static %}
 
 {% block head %}
@@ -8,14 +8,119 @@
 {% block title %}資安週{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="jumbotron">
-        <h1 class="display-4">Information Security Week</h1>
-        <p class="lead">
-            資安週，全名「資通安全宣導週」，為了將資安觀念傳遞給全校師生，每年的 12 月份，我們將舉辦各種新奇的活動來宣達「資訊安全」
-        </p>
-        <hr class="my-4">
-        <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
-    </div>
+<div class="container" id="app">
+    <template>
+        <v-card flat>
+            <v-card-title class="d-flex justify-content-center">
+                快來完成今年的資安週任務吧
+            </v-card-title>
+            <v-tabs fixed-tabs>
+                <v-tab>逛攤位</v-tab>
+                <v-tab>聽講座</v-tab>
+                <v-tab>看文章</v-tab>
+
+                <v-tab-item>
+                    <v-container>
+                        <v-card>
+                            <v-card-title>想獲得精美好禮嗎?</v-card-title>
+                            <v-divider></v-divider>
+                            <v-card-text class="headline font-weight-bold">
+                                12/25 至 12/27 10:00 ~ 16:00<br>
+                                我們將在<strong>噴水池前</strong>擺攤
+                            </v-card-text>
+                            <v-card-text>
+                                <p>當天只要來攤位打卡就送精美小禮物</p>
+                                <p>甚麼???</p>
+                                <p>你覺得送的太少?</p>
+                                <p>沒關係</p>
+                                <p>只要當天依照工作人員的指示完成神秘遊戲</p>
+                                <p>你將有機會獲得大禮</p>
+                                <p>至於大禮是甚麼?</p>
+                                <p>才不告訴你呢</p>
+                                <p>當天自己來攤位看囉</p>
+                            </v-card-text>
+                        </v-card>
+                    </v-container>
+                </v-tab-item>
+                <v-tab-item>
+                    <v-container>
+                        <v-card class="pb-4">
+                            <v-card-title>庶民?假新聞?隱私權?更新?</v-card-title>
+                            <v-divider></v-divider>
+                            <v-card-text>
+                                <p>今年資安週系列講座不再與您探討高深的技術</p>
+                                <p>絕對不是相信您實力不濟聽不懂</p>
+                                <p>而是今年我們特地準備了與大家息息相關的主題</p>
+                                <p>快點擊下面的標題來報名</p>
+                            </v-card-text>
+                            <v-expansion-panels popout>
+                                <v-expansion-panel>
+                                    <v-expansion-panel-header class="d-flex justify-content-between">隱私權</v-expansion-panel-header>
+                                    <v-expansion-panel-content>
+                                        <v-card flat>
+                                            <v-card-title>12/24 10:00 ~ 12:00</v-card-title>
+                                            <v-card-subtitle>地點:資電243</v-card-subtitle>
+                                            <v-card-text>eofqpok;a,eglmopkkkpkp</v-card-text>
+                                            <v-card-actions>
+                                                <button type="button" class="btn btn-success">我要報名</button>
+                                            </v-card-actions>
+                                        </v-card>
+                                    </v-expansion-panel-content>
+                                </v-expansion-panel>
+                                <v-expansion-panel>
+                                    <v-expansion-panel-header class="d-flex justify-content-between">更新</v-expansion-panel-header>
+                                    <v-expansion-panel-content>mewgopwegokp</v-expansion-panel-content>
+                                </v-expansion-panel>
+                                <v-expansion-panel>
+                                    <v-expansion-panel-header class="d-flex justify-content-between">假新聞</v-expansion-panel-header>
+                                    <v-expansion-panel-content>ewopwke[pgks[p</v-expansion-panel-content>
+                                </v-expansion-panel>
+                            </v-expansion-panels>
+                        </v-card>
+                    </v-container>
+                </v-tab-item>
+                <v-tab-item>
+                    <v-container>
+                        <v-card>
+                            <v-card-title>你渴望知識的力量嗎?</v-card-title>
+                            <v-divider></v-divider>
+                            <v-card-text class="headline font-weight-bold">
+                                12/25 至 12/27
+                            </v-card-text>
+                            <v-card-text>
+                                <p>在上述的日期中</p>
+                                <p>黑客社的 facebook 及 ig 將會不定時的出現資安知識大補帖</p>
+                                <p>想要學習到平常學校不會教你的知識嗎?</p>
+                                <p>還不趕快關注黑客社的 facebook 及 ig</p>
+                                <p>看完文章之後也別忘了分享給你的親朋好友</p>
+                                <p>讓他們知道你是個飽讀詩書的人</p>
+                            </v-card-text>
+                            <v-card-actions class="justify-content-center">
+                                <v-btn small fab class="mx-2 bg-primary text-white" href="https://www.facebook.com/HackerSir.tw">
+                                    <v-icon dark>mdi-facebook</v-icon>
+                                </v-btn>
+                                <v-btn small fab class="mx-2 bg-danger text-white" href="https://www.instagram.com/fcu_hackersir">
+                                    <v-icon dark>mdi-instagram</v-icon>
+                                </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-container>
+                </v-tab-item>
+            </v-tabs>
+        </v-card>
+    </template>
 </div>
+{% endblock %}
+
+{% block js %}
+<script>
+    new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        vuetify: new Vuetify(),
+        data: {
+
+        }
+    })
+</script>
 {% endblock %}
