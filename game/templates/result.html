@@ -6,9 +6,9 @@
 {% block content %}
 <div class="container" id="app">
     <!-- Loading -->
-    <v-card v-if="isLoading">
-        <v-card-title class="justify-content-center">讀取結果中</v-card-title>
-        <v-card-text class=text-center>
+    <div class="card border-dark" v-if="isLoading">
+        <div class="card-header text-center">讀取結果中</div>
+        <div class="card-body d-flex justify-content-center">
             <div class="spinner-grow text-info" style="width: 3rem; height: 3rem;" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
@@ -18,12 +18,12 @@
             <div class="spinner-grow text-info" style="width: 3rem; height: 3rem;" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
-        </v-card-text>
-    </v-card>
+        </div>
+    </div>
     <div v-if="!isLoading">
         <div class="d-flex justify-content-between">
             <h3>成績結算</h3>
-            <v-btn href="{% url 'game' %}" class="bg-primary text-white">再玩一次</v-btn>
+            <a href="{% url 'game' %}" class="btn btn-primary" role="button">再玩一次</a>
         </div>
         <hr>
         <v-card>
@@ -54,20 +54,43 @@
             </ul>
 
             <v-card-actions class="d-flex justify-content-between">
-                <v-btn data-toggle="modal"
+                <button data-toggle="modal"
                     data-target="#solutionModal"
-                    class="bg-success text-white">詳解</v-btn>
-                <v-btn data-toggle="modal"
+                    class="btn btn-success">詳解</button>
+                <button data-toggle="modal"
                     data-target="#reportModal"
-                    class="bg-warning text-white">回報問題</v-btn>
+                    class="btn btn-warning">回報問題</button>
             </v-card-actions>
         </v-card>
-        <v-card flat class="mt-2 p-0">
-            <v-card-actions class="p-0">
-                <!-- 頁數 -->
-                <v-pagination v-model="currentPage" :length="rows" class="m-0 p-0" color="bg-primary"></v-pagination>
-            </v-card-actions>
-        </v-card>
+        <nav aria-label="Page navigation" class="mt-2">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" :class="{ 'disabled' : currentPage==1 }">
+                    <a class="page-link" href="#" @click.prevent="prevStep" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item" :class="{ 'active' : currentPage==1 }">
+                    <a class="page-link" @click.prevent="currentPage=1" href="#">1</a>
+                </li>
+                <li class="page-item" :class="{ 'active' : currentPage==2 }">
+                    <a class="page-link" @click.prevent="currentPage=2" href="#">2</a>
+                </li>
+                <li class="page-item" :class="{ 'active' : currentPage==3 }">
+                    <a class="page-link" @click.prevent="currentPage=3" href="#">3</a>
+                </li>
+                <li class="page-item" :class="{ 'active' : currentPage==4 }">
+                    <a class="page-link" @click.prevent="currentPage=4" href="#">4</a>
+                </li>
+                <li class="page-item" :class="{ 'active' : currentPage==5 }">
+                    <a class="page-link" @click.prevent="currentPage=4" href="#">5</a>
+                </li>
+                <li class="page-item" :class="{ 'disabled' : currentPage==5 }">
+                    <a class="page-link" href="#" @click.prevent="nextStep" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
     <!-- 詳解 -->
     <div class="modal fade" id="solutionModal" tabindex="-1" role="dialog" aria-labelledby="solutionModal"
@@ -84,9 +107,9 @@
                     [[ solution ]]
                 </div>
                 <div class="modal-footer">
-                    <v-btn type="button" class="btn btn-secondary bg-secondary" data-dismiss="modal">Close</v-btn>
-                    <v-btn type="button" class="btn btn-warning bg-warning" data-toggle="modal" data-dismiss="modal"
-                        data-target="#reportModal">回報問題</v-btn>
+                    <button type="button" class="btn btn-secondary bg-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-warning bg-warning" data-toggle="modal" data-dismiss="modal"
+                        data-target="#reportModal">回報問題</button>
                 </div>
             </div>
         </div>
@@ -111,9 +134,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <v-btn type="button" class="btn btn-secondary bg-secondary" data-dismiss="modal">Close</v-btn>
-                    <v-btn type="button" class="btn btn-primary bg-primary" @click="send_report()"
-                        data-dismiss="modal">送出</v-btn>
+                    <button type="button" class="btn btn-secondary bg-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary bg-primary" @click="send_report()"
+                        data-dismiss="modal">送出</button>
                 </div>
             </div>
         </div>
@@ -182,7 +205,23 @@
                             self.description = "";
                         }
                     });
-            }
+            },
+            nextStep: function () {
+                if (this.currentPage >= 5) {
+                    this.currentPage = 5;
+                }
+                else {
+                    this.currentPage++;
+                }
+            },
+            prevStep: function () {
+                if (this.currentPage <= 1) {
+                    this.currentPage = 1;
+                }
+                else {
+                    this.currentPage--;
+                }
+            },
         },
         computed: {
             rows() {
