@@ -1,4 +1,4 @@
-{% extends "vue_layout.html" %}
+{% extends "vuetify_layout.html" %}
 {% load static %}
 
 {% block title %}知識王 - 結算{% endblock %}
@@ -9,59 +9,65 @@
     <v-card v-if="isLoading">
         <v-card-title class="justify-content-center">讀取結果中</v-card-title>
         <v-card-text class=text-center>
-            <b-spinner style="width: 3rem; height: 3rem;" type="grow" variant="info" label="Large Spinner"></b-spinner>
-            <b-spinner style="width: 3rem; height: 3rem;" type="grow" variant="info" label="Large Spinner"></b-spinner>
-            <b-spinner style="width: 3rem; height: 3rem;" type="grow" variant="info" label="Large Spinner"></b-spinner>
+            <div class="spinner-grow text-info" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner-grow text-info" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner-grow text-info" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
         </v-card-text>
     </v-card>
     <div v-if="!isLoading">
         <div class="d-flex justify-content-between">
             <h3>成績結算</h3>
-            <v-btn href="{% url 'game' %}" role="button">再玩一次</v-btn>
+            <v-btn href="{% url 'game' %}" class="bg-primary text-white">再玩一次</v-btn>
         </div>
         <hr>
-        <b-card header-tag="header" footer-tag="footer" no-body>
-            <template v-slot:header>
-                <div class="d-flex justify-content-between">
-                    <span>分數: [[ score ]]</span>
-                    <span>挑戰時間: [[ time ]]</span>
-                </div>
-            </template>
+        <v-card>
+            <div class="d-flex justify-content-between align-items-center">
+                <v-card-title>分數: [[ score ]]</v-card-title>
+                <v-card-subtitle>挑戰時間: [[ time ]]</v-card-subtitle>
+            </div>
+            <v-alert outlined color="bg-info">
+                [[ topic ]]
+            </v-alert>
+            <ul class="list-group list-group-flush m-0">
+                <li class="list-group-item"
+                    :class="{ 'list-group-item-success' : option_1==correct_option, 'list-group-item-info' : option_1==select_option }">
+                    [[ option_1 ]]
+                </li>
+                <li class="list-group-item"
+                    :class="{ 'list-group-item-success' : option_2==correct_option, 'list-group-item-info' : option_2==select_option }">
+                    [[ option_2 ]]
+                </li>
+                <li class="list-group-item"
+                    :class="{ 'list-group-item-success' : option_3==correct_option, 'list-group-item-info' : option_3==select_option }">
+                    [[ option_3 ]]
+                </li>
+                <li class="list-group-item"
+                    :class="{ 'list-group-item-success' : option_4==correct_option, 'list-group-item-info' : option_4==select_option }">
+                    [[ option_4 ]]
+                </li>
+            </ul>
 
-            <v-list>
-                <v-subheader>[[ topic ]]</v-subheader>
-                <v-list-item-group>
-                    <v-list-item
-                        :class="{ 'list-group-item-success' : option_1==correct_option, 'list-group-item-info' : option_1==select_option }">
-                        [[ option_1 ]]
-                    </v-list-item>
-                    <v-list-item
-                        :class="{ 'list-group-item-success' : option_2==correct_option, 'list-group-item-info' : option_2==select_option }">
-                        [[ option_2 ]]
-                    </v-list-item>
-                    <v-list-item
-                        :class="{ 'list-group-item-success' : option_3==correct_option, 'list-group-item-info' : option_3==select_option }">
-                        [[ option_3 ]]
-                    </v-list-item>
-                    <v-list-item
-                        :class="{ 'list-group-item-success' : option_4==correct_option, 'list-group-item-info' : option_4==select_option }">
-                        [[ option_4 ]]
-                    </v-list-item>
-                </v-list-item-group>
-                <div class="card-footer border-dark bg-transparent d-flex justify-content-between">
-                    <v-btn data-toggle="modal"
-                        data-target="#solutionModal">詳解</v-btn>
-                    <v-btn data-toggle="modal"
-                        data-target="#reportModal">回報問題</v-btn>
-                </div>
-            </v-list>
-
-            <template v-slot:footer>
+            <v-card-actions class="d-flex justify-content-between">
+                <v-btn data-toggle="modal"
+                    data-target="#solutionModal"
+                    class="bg-success text-white">詳解</v-btn>
+                <v-btn data-toggle="modal"
+                    data-target="#reportModal"
+                    class="bg-warning text-white">回報問題</v-btn>
+            </v-card-actions>
+        </v-card>
+        <v-card flat class="mt-2 p-0">
+            <v-card-actions class="p-0">
                 <!-- 頁數 -->
-                <v-pagination v-model="currentPage" :length="rows" class="m-0" color="bg-primary">
-                </v-pagination>
-            </template>
-        </b-card>
+                <v-pagination v-model="currentPage" :length="rows" class="m-0 p-0" color="bg-primary"></v-pagination>
+            </v-card-actions>
+        </v-card>
     </div>
     <!-- 詳解 -->
     <div class="modal fade" id="solutionModal" tabindex="-1" role="dialog" aria-labelledby="solutionModal"
