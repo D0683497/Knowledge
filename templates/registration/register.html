@@ -1,11 +1,14 @@
 {% extends "layout.html" %}
 {% load static %}
 
-{% block title %}資安週 - 登入{% endblock %}
+{% block title %}資安週 - 註冊{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h3>登入</h3>
+    <div class="d-flex justify-content-between">
+        <h3>註冊</h3>
+        <a href="{% url 'login' %}" class="btn btn-primary" role="button">點我登入</a>
+    </div>
     <hr>
 
     <form method="post" action="{% url 'register' %}">

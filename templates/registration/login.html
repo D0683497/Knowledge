@@ -47,6 +47,10 @@
                     帳號密碼驗證失敗，請重試
                 </div>
             </div>
+
+            <div class="form-group">
+                <a href="{% url 'register' %}">還沒有帳號?點我註冊</a>
+            </div>
     
             <button type="submit" class="btn btn-primary">登入</button>
         </form>
@@ -65,7 +69,11 @@
                 <label for="id_password">密碼</label>
                 <input type="password" class="form-control" id="id_password" name="password" required></input>
             </div>
-    
+            
+            <div class="form-group">
+                <a href="{% url 'register' %}">還沒有帳號?點我註冊</a>
+            </div>
+            
             <button type="submit" class="btn btn-primary">登入</button>
         </form>
     {% endif %}

@@ -19,6 +19,14 @@
             {% else %}
 
             {% endif %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="info" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    介紹
+                </a>
+                <div class="dropdown-menu" aria-labelledby="info">
+                    <a class="dropdown-item" href="{% url 'info108' %}">108</a>
+                </div>
+            </li>
         </ul>
         {% if user.is_authenticated %}
             <a class="btn btn-outline-light my-2 mr-2 my-sm-0" href="{% url 'manage' %}">{{ user.username }}</a>
