@@ -1,4 +1,4 @@
-{% extends "vue_layout.html" %}
+{% extends "vuetify_layout.html" %}
 {% load static %}
 
 {% block title %}知識王 - 排行榜{% endblock %}
@@ -7,33 +7,20 @@
 <div class="container" id="app">
     <div class="d-flex justify-content-between">
         <h3>排行榜</h3>
-        <v-btn href="{% url 'game' %}" role="button">再玩一次</v-btn>
+        <a class="btn btn-primary" href="{% url 'game' %}" role="button">再玩一次</a>
     </div>
     <hr>
-    <v-text-field
-        v-model="search"
-        label="Search"
-        single-line
-        hide-details
-    ></v-text-field>
+    <div class="input-group mb-3">
+        <input v-model="search" type="text" class="form-control" placeholder="Search" aria-label="search" aria-describedby="search">
+    </div>
     <v-data-table
-    :headers="fields"
-    :items="ranks"
-    :page.sync="currentPage"
-    :search="search"
-    class="elevation-1"
-    @page-count="pageCount = $event"
-    hide-default-footer
+        :headers="fields"
+        :items="ranks"
+        :search="search"
+        :items-per-page="5"
+        class="elevation-1"
+        data-app
     ></v-data-table>
-    <v-text-field
-        :value="perPage"
-        label="Items per page"
-        type="number"
-        min="1"
-        max="10"
-        @input="perPage = parseInt($event, 10)"
-    ></v-text-field>
-    <v-pagination v-model="currentPage" :length="pageCount" color="bg-primary"></v-pagination>
 </div>
 {% endblock %}
 
@@ -44,17 +31,12 @@
         el: '#app',
         vuetify: new Vuetify(),
         data: {
-            isLoading: true,
-            perPage: 10,
-            currentPage: 1,
-            pageCount: 0,
-            username: '',
             search: '',
             ranks: [],
             fields: [
                 {value: 'username', text: '玩家'}, 
                 {value: 'score', text: '總分', sortable: true, filterable: false}
-            ]
+            ],
         },
         created: function () {
             get_rank();
@@ -63,22 +45,14 @@
             function get_rank () {
                 axios.get('{% url "get_rank" %}')
                 .then((response) => {
-                    self.username = response.data.currentuser;
                     self.ranks = response.data.rank
                     self.isLoading = false;
                 });
             }
         },
         methods: {
-            rowClass(item, type) {
-                if (!item) return
-                if (item.username === this.username) return 'table-info'
-            }
         },
         computed: {
-            rows() {
-                return this.ranks.length
-            }
         }
     });
 </script>

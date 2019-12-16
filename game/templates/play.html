@@ -1,4 +1,4 @@
-{% extends "vue_layout.html" %}
+{% extends "layout.html" %}
 {% load static %}
 
 {% block title %}資安週 - 知識王{% endblock %}
@@ -7,67 +7,47 @@
 <div class="container" id="app">
     <div class="d-flex justify-content-between">
         <h3>知識王</h3>
-        <v-btn href="{% url 'game' %}" role="button">開始遊戲</v-btn>
+        <a href="{% url 'game' %}" class="btn btn-primary" role="button">開始遊戲</a>
     </div>
     <hr>
-    <v-card>
-        <v-card-title>
-            <v-tabs background-color="indigo" centered grow v-model="tab">
-                <v-tab>
-                    規則
-                </v-tab>
-                <v-tab>
-                    遊戲頁面
-                </v-tab>
-                <v-tab>
-                    結算頁面
-                </v-tab>
-                <v-tab>
-            </v-tabs>
-        </v-card-title>
-        <v-card-text>
-            <v-tabs-items v-model="tab">
-                <v-tab-item key="0">
-                    <p class="m-2">一個遊戲回合有五題問題</p>
-                    <p class="m-2">每題皆有四個選項且皆為單選題</p>
-                    <p class="m-2">點擊開始遊戲後，您需要再 10 秒內作答完</p>
-                    <p class="m-2">若 10 秒內未作答，則該題視為未作答，且系統會自動跳至下一題</p>
-                    <p class="m-2">請在時間內選擇您覺得正確的選項</p>
-                    <p class="m-2">作答正確將獲得一分</p>
-                    <p class="m-2">未作答及作答錯誤則為零分</p>
-                    <p class="m-2">若您需要練習可以<a href="{% url 'exercise' %}">點我</a>去看題庫</p>
-                </v-tab-item>
-                <v-tab-item key="1">
-                    <p class="m-2">點擊開始後您後看到以下畫面</p>
-                    <img src="{% static "image/start_game.png" %}" class="img-fluid" alt="開始遊戲">
-                    <p class="m-2">最上方黃色區域為剩餘時間</p>
-                    <p class="m-2">中間灰色區域為該題題目</p>
-                    <p class="m-2">下方按鈕為該題選項</p>
-                </v-tab-item>
-                <v-tab-item key="2">
-                    <p class="m-2">遊戲結束後您將看到以下畫面</p>
-                    <img src="{% static "image/result.png" %}" class="img-fluid" alt="成績">
-                    <p class="m-2">綠色選項為該題正確選項</p>
-                    <p class="m-2">藍色選項為您在遊戲中選擇的選項</p>
-                    <p class="m-2">若只有藍色選項則代表該題回答正確</p>
-                    <p class="m-2">點擊下方綠色按鈕可以看更詳盡的解釋</p>
-                    <p class="m-2">若您覺得題目有問題，則可以點黃色按鈕回報問題</p>
-                </v-tab-item>
-            </v-tabs-items>
-        </v-card-text>
-    </v-card>
+    <ul class="nav nav-tabs nav-fill" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="rule-tab" data-toggle="tab" href="#rule" role="tab" aria-controls="rule" aria-selected="true">規則</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="play-tab" data-toggle="tab" href="#play" role="tab" aria-controls="play" aria-selected="false">遊戲頁面</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="result-tab" data-toggle="tab" href="#result" role="tab" aria-controls="contact" aria-selected="false">結算頁面</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="rule" role="tabpanel" aria-labelledby="rule-tab">
+            <p class="m-2">一個遊戲回合有五題問題</p>
+            <p class="m-2">每題皆有四個選項且皆為單選題</p>
+            <p class="m-2">點擊開始遊戲後，您需要再 10 秒內作答完</p>
+            <p class="m-2">若 10 秒內未作答，則該題視為未作答，且系統會自動跳至下一題</p> 
+            <p class="m-2">請在時間內選擇您覺得正確的選項</p>
+            <p class="m-2">作答正確將獲得一分</p>
+            <p class="m-2">未作答及作答錯誤則為零分</p>
+            <p class="m-2">若您需要練習可以<a href="{% url 'exercise' %}">點我</a>去看題庫</p>
+        </div>
+        <div class="tab-pane fade" id="play" role="tabpanel" aria-labelledby="play-tab">
+            <p class="m-2">點擊開始後您後看到以下畫面</p> 
+            <img src="{% static "image/start_game.png" %}" class="img-fluid" alt="開始遊戲">
+            <p class="m-2">最上方黃色區域為剩餘時間</p> 
+            <p class="m-2">中間灰色區域為該題題目</p>
+            <p class="m-2">下方按鈕為該題選項</p> 
+        </div>
+        <div class="tab-pane fade" id="result" role="tabpanel" aria-labelledby="result-tab">
+            <p class="m-2">遊戲結束後您將看到以下畫面</p>
+            <img src="{% static "image/result.png" %}" class="img-fluid" alt="成績">
+            <p class="m-2">綠色選項為該題正確選項</p>
+            <p class="m-2">藍色選項為您在遊戲中選擇的選項</p>
+            <p class="m-2">若只有藍色選項則代表該題回答正確</p>
+            <p class="m-2">點擊下方綠色按鈕可以看更詳盡的解釋</p>
+            <p class="m-2">若您覺得題目有問題，則可以點黃色按鈕回報問題</p>
+        </div>
+    </div>
 </div>
-{% endblock %}
-
-
-{% block js %}
-<script>
-    var app = new Vue({
-        el: '#app',
-        vuetify: new Vuetify(),
-        data: {
-            tab: 0
-        }
-    });
-</script>
 {% endblock %}
