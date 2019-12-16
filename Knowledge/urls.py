@@ -23,5 +23,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('game/', include('game.urls')),
     path('info/', include('info.urls')),
+    path('act/', include('act.urls')),
+    path('staff/', include('staff.urls')),
     path('', views.index, name='index')
 ]

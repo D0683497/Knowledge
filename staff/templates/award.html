@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}資安週工作人員{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h3>領獎</h3>
+    <hr>
+
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link active" id="nav-scan-tab" data-toggle="tab" href="#nav-scan" role="tab" aria-controls="nav-scan" aria-selected="true">掃描</a>
+            <a class="nav-item nav-link" id="nav-keyin-tab" data-toggle="tab" href="#nav-keyin" role="tab" aria-controls="nav-keyin" aria-selected="false">手動輸入</a>
+        </div>
+    </nav>
+    <div class="tab-content " id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-scan" role="tabpanel" aria-labelledby="nav-scan-tab">
+            
+            <form action="{% url 'award' %}" method="POST" class="my-4">
+                {% csrf_token %}
+
+                <!-- 學號 -->
+                <div class="form-group mr-2">
+                    {{ scanform.nid.label_tag }}
+                    {{ scanform.nid }}
+                    {% comment %} 錯誤訊息 {% endcomment %}
+                    {% if scanform.nid.errors %}
+                        {% for error in scanform.nid.errors %}
+                            <div class="invalid-feedback">
+                                <p>{{ error }}</p>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-outline-secondary mr-2" name="scan">
+                    查詢
+                </button>
+            </form>
+
+        </div>
+        <div class="tab-pane fade" id="nav-keyin" role="tabpanel" aria-labelledby="nav-keyin-tab">
+            
+            <form action="{% url 'award' %}" method="POST" class="my-4">
+                {% csrf_token %}
+
+                <!-- 學號 -->
+                <div class="form-group mr-2">
+                    {{ keyinform.nid.label_tag }}
+                    {{ keyinform.nid }}
+                    {% comment %} 錯誤訊息 {% endcomment %}
+                    {% if keyinform.nid.errors %}
+                        {% for error in keyinform.nid.errors %}
+                            <div class="invalid-feedback">
+                                <p>{{ error }}</p>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-outline-secondary mr-2" name="keyin">
+                    查詢
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    {% if scanform.nid.errors %}
+        document.getElementById("id_scan-nid").classList.add("is-invalid");
+    {% endif %}
+    {% if keyinform.nid.errors %}
+        document.getElementById("id_keyin-nid").classList.add("is-invalid");
+    {% endif %}
+</script>
+{% endblock %}

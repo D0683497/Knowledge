@@ -16,6 +16,16 @@
                     <a class="dropdown-item" href="{% url 'exercise' %}">看題目</a>
                 </div>
             </li>
+            {% if user.is_staff %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="staff" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    工作人員
+                </a>
+                <div class="dropdown-menu" aria-labelledby="staff">
+                    <a class="dropdown-item" href="{% url 'award' %}">領獎</a>
+                </div>
+            </li>
+            {% endif %}
             {% else %}
 
             {% endif %}
