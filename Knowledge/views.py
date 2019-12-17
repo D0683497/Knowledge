@@ -3,7 +3,6 @@ from django.shortcuts import render
 def index(request):
     return render(request, 'index.html', {})
 
-"""
 def error_400(request, exception):
     return render(request,'errors/400.html', {})
 
@@ -18,4 +17,3 @@ def error_500(request):
 
 def csrf_failure(request, reason=""):
     return render(request,'errors/403_csrf.html', {})
-"""
