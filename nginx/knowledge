@@ -11,6 +11,9 @@ server{
     location /static {
         alias /home/d0683497/Knowledge/static/;
     }
+    location /favicon.ico {
+        root /home/d0683497/Knowledge/static/icon/favicon.ico;
+    }
     location / {
         include uwsgi_params;
         uwsgi_pass django;
