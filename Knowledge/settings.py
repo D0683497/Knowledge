@@ -125,9 +125,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+if DEBUG:
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+else:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # AUTH
 
@@ -157,3 +158,7 @@ SESSION_CACHE_ALIAS = "default"
 # IMPORT_EXPORT
 
 IMPORT_EXPORT_USE_TRANSACTIONS = True
+
+# ERROR
+from . import views
+CSRF_FAILURE_VIEW = views.csrf_failure
