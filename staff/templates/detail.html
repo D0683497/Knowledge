@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}資安週工作人員{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between">
+        <h3>{{ nid }}</h3>
+        <h3>分數:{{ score }}</h3>
+    </div>
+    <hr>
+
+    <div class="card mb-3">
+        <div class="card-header">簽到列表</div>
+        <div class="card-body">
+            {% if checkin %}
+                <ul class="list-group">
+                    {% for i in checkin %}
+                        <li class="list-group-item">{{ i.created_at }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="alert alert-warning" role="alert">
+                    沒有紀錄
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">領獎列表</div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">品項</th>
+                        <th scope="col">時間</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in prize %}
+                    <tr>
+                        <td>{{ i.prize.name }}</td>
+                        <td>{{ i.created_at }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <form action="{% url 'checkin' nid=nid %}" method="POST" class="form-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">簽到</button>
+        </form>
+        <a class="btn btn-success my-2" href="{% url 'prize' nid=nid %}" role="button">領獎</a>
+    </div>
+</div>
+{% endblock %}

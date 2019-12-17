@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}資安週工作人員{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between">
+        <h3>{{ nid }}</h3>
+        <h3>選擇獎品</h3>
+    </div>
+    <hr>
+    <form action="{% url 'prize' nid=nid %}" method="POST" class="my-2">
+        {% csrf_token %}
+
+        {% for i in prize %}
+            {% if i.last == 0 %}
+            {% else %}
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success btn-block mr-1" name="item" value="{{ i.name }}">
+                        <div>{{ i.name }}</div>
+                        <div>{{ i.last }} / {{ i.total }}</div>
+                        <div>{{ i.description }}</div>
+                    </button>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </form>
+</div>
+{% endblock %}
