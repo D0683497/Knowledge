@@ -25,7 +25,7 @@ SECRET_KEY = 'l3u^kbrw!-7^9abbbnqybqaw)@o($w4i&7))0vrg2&)=ujh2n('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', 'isweek.k139.me']
 
 
 # Application definition
